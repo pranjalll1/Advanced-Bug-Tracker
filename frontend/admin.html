@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel | Bug Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">🐛 Bug Tracker</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="bugs.html">Bugs</a>
+      <a href="tasks.html">Tasks</a>
+      <a href="admin.html" class="active">Admin</a>
+      <span id="user-name"></span>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="page-header">
+      <h1>👑 Admin Panel</h1>
+    </div>
+
+    <!-- ─── Tabs ────────────────────────────────────────── -->
+    <div class="tab-bar">
+      <button
+        class="tab-btn active"
+        onclick="switchTab('pending')">
+        🕐 Pending Approvals
+        <span id="pending-count" class="tab-badge">0</span>
+      </button>
+      <button
+        class="tab-btn"
+        onclick="switchTab('all')">
+        👥 All Users
+      </button>
+    </div>
+
+    <!-- ─── Pending Users Tab ────────────────────────────── -->
+    <div id="tab-pending">
+
+      <div id="pending-empty" class="empty-state hidden">
+        <p>✅ No pending approvals right now!</p>
+      </div>
+
+      <div id="pending-list" class="user-cards">
+        <p class="loading-text">Loading pending users...</p>
+      </div>
+
+    </div>
+
+    <!-- ─── All Users Tab ───────────────────────────────── -->
+    <div id="tab-all" class="hidden">
+
+      <!-- Filters -->
+      <div class="filters" style="margin-bottom: 16px;">
+        <select id="filter-role" onchange="loadAllUsers()">
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="developer">Developer</option>
+          <option value="tester">Tester</option>
+        </select>
+
+        <select id="filter-status" onchange="loadAllUsers()">
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="bug-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Registered</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="all-users-body">
+            <tr>
+              <td colspan="6" class="loading-text">
+                Loading users...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ─── Change Role Modal ────────────────────────────────── -->
+  <div id="role-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🔄 Change User Role</h2>
+        <span onclick="closeRoleModal()" class="close-btn">✕</span>
+      </div>
+      <div class="modal-body">
+        <p id="role-modal-user-name"
+          style="margin-bottom:12px; font-weight:600;">
+        </p>
+        <div class="form-group">
+          <label>New Role</label>
+          <select id="new-role">
+            <option value="tester">Tester</option>
+            <option value="developer">Developer</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div id="role-error" class="error-msg hidden"></div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeRoleModal()"
+          class="btn-secondary">Cancel</button>
+        <button onclick="submitRoleChange()"
+          class="btn-primary">Update Role</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-overlay" class="overlay hidden"
+    onclick="closeRoleModal()"></div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bug Detail | Bug Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">🐛 Bug Tracker</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="bugs.html" class="active">Bugs</a>
+      <a href="tasks.html">Tasks</a>
+      <span id="user-name"></span>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Back Button -->
+    <div style="margin-bottom: 16px;">
+      <button onclick="window.location.href='bugs.html'"
+        class="btn-secondary">
+        ← Back to Bugs
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading-text">
+      Loading bug details...
+    </div>
+
+    <!-- ─── Bug Detail Card ──────────────────────────────── -->
+    <div id="bug-detail" class="hidden">
+
+      <!-- Header -->
+      <div class="detail-header">
+        <div>
+          <h1 id="bug-title">—</h1>
+          <div class="detail-meta">
+            <span id="bug-project-badge"></span>
+            <span id="bug-environment-badge"></span>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <!-- Status Update (admin, manager, assigned dev) -->
+          <select id="status-select" onchange="updateStatus()">
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+            <option value="reopened">Reopened</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ─── Info Grid ──────────────────────────────────── -->
+      <div class="detail-grid">
+
+        <div class="detail-card">
+          <h3>📋 Details</h3>
+          <table class="info-table">
+            <tr>
+              <td>Severity</td>
+              <td><span id="bug-severity" class="badge">—</span></td>
+            </tr>
+            <tr>
+              <td>Priority</td>
+              <td><span id="bug-priority" class="badge">—</span></td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td><span id="bug-status" class="badge">—</span></td>
+            </tr>
+            <tr>
+              <td>Project</td>
+              <td id="bug-project">—</td>
+            </tr>
+            <tr>
+              <td>Environment</td>
+              <td id="bug-environment">—</td>
+            </tr>
+            <tr>
+              <td>Due Date</td>
+              <td id="bug-due-date">—</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="detail-card">
+          <h3>👥 People</h3>
+          <table class="info-table">
+            <tr>
+              <td>Reported By</td>
+              <td id="bug-reported-by">—</td>
+            </tr>
+            <tr>
+              <td>Assigned To</td>
+              <td id="bug-assigned-to">—</td>
+            </tr>
+            <tr>
+              <td>Created At</td>
+              <td id="bug-created-at">—</td>
+            </tr>
+            <tr>
+              <td>Resolved At</td>
+              <td id="bug-resolved-at">—</td>
+            </tr>
+          </table>
+
+          <!-- Assign Bug (admin/manager only) -->
+          <div id="assign-section" class="hidden"
+            style="margin-top: 16px;">
+            <h4>Assign to Developer</h4>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <select id="developer-select"
+                style="flex:1; padding:8px; border-radius:6px;
+                       border:1px solid #ddd;">
+                <option value="">Select developer...</option>
+              </select>
+              <button onclick="assignBug()"
+                class="btn-primary">Assign</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ─── Description ───────────────────────────────── -->
+      <div class="detail-card" style="margin-top: 16px;">
+        <h3>📝 Description</h3>
+        <p id="bug-description" class="detail-text">—</p>
+      </div>
+
+      <!-- ─── Steps / Expected / Actual ─────────────────── -->
+      <div id="extra-info" class="detail-grid"
+        style="margin-top: 16px;">
+
+        <div class="detail-card" id="steps-card">
+          <h3>🔁 Steps to Reproduce</h3>
+          <p id="bug-steps" class="detail-text">—</p>
+        </div>
+
+        <div class="detail-card">
+          <h3>✅ Expected Behavior</h3>
+          <p id="bug-expected" class="detail-text">—</p>
+          <h3 style="margin-top:16px;">❌ Actual Behavior</h3>
+          <p id="bug-actual" class="detail-text">—</p>
+        </div>
+
+      </div>
+
+      <!-- ─── Tags ──────────────────────────────────────── -->
+      <div id="tags-section"
+        style="margin-top: 16px; display: none;">
+        <h3>🏷️ Tags</h3>
+        <div id="bug-tags" class="tags-container"></div>
+      </div>
+
+      <!-- ─── Comments Section ──────────────────────────── -->
+      <div class="detail-card" style="margin-top: 24px;">
+        <h3>💬 Comments
+          <span id="comment-count"
+            style="font-size:14px; color:#999;
+                   font-weight:normal;">
+            (0)
+          </span>
+        </h3>
+
+        <!-- Add Comment -->
+        <div class="comment-form">
+          <textarea
+            id="comment-text"
+            rows="3"
+            placeholder="Add a comment..."
+          ></textarea>
+          <div style="display:flex; justify-content:flex-end;
+                      margin-top:8px;">
+            <button onclick="addComment()"
+              class="btn-primary">
+              Post Comment
+            </button>
+          </div>
+        </div>
+
+        <!-- Comment List -->
+        <div id="comment-list">
+          <p class="loading-text">Loading comments...</p>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- end #bug-detail -->
+
+  </div>
+
+  <script src="js/bug-detail.js"></script>
+</body>
+</html>

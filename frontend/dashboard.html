@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | Bug Tracker</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">🐛 Bug Tracker</div>
+    <div class="nav-links">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="bugs.html">Bugs</a>
+      <a href="tasks.html">Tasks</a>
+      <span id="admin-link"></span>
+      <span class="nav-user">
+        👤 <span id="user-name"></span>
+        <span id="user-role-badge"></span>
+      </span>
+      <button onclick="logout()" class="btn-logout">
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div>
+        <h1 id="welcome-text">Welcome back! 👋</h1>
+        <p id="welcome-sub">Here's your project overview</p>
+      </div>
+      <div class="banner-actions">
+        <a href="bugs.html" class="btn-primary">
+          🐛 View Bugs
+        </a>
+        <a href="tasks.html" class="btn-secondary"
+          style="text-decoration:none; padding:10px 20px;
+                 border-radius:6px;">
+          📋 View Tasks
+        </a>
+      </div>
+    </div>
+
+    <!-- ─── Bug Stats ────────────────────────────────────── -->
+    <h2 class="section-title">🐛 Bug Overview</h2>
+    <div class="stats-grid">
+
+      <div class="stat-card stat-blue">
+        <div class="stat-icon">🐛</div>
+        <div class="stat-info">
+          <p class="stat-label">Total Bugs</p>
+          <h2 id="total-bugs">—</h2>
+        </div>
+      </div>
+
+      <div class="stat-card stat-orange">
+        <div class="stat-icon">🔓</div>
+        <div class="stat-info">
+          <p class="stat-label">Open Bugs</p>
+          <h2 id="open-bugs">—</h2>
+        </div>
+      </div>
+
+      <div class="stat-card stat-yellow">
+        <div class="stat-icon">⚙️</div>
+        <div class="stat-info">
+          <p class="stat-label">In Progress</p>
+          <h2 id="inprogress-bugs">—</h2>
+        </div>
+      </div>
+
+      <div class="stat-card stat-green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <p class="stat-label">Resolved</p>
+          <h2 id="resolved-bugs">—</h2>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── Task Stats ───────────────────────────────────── -->
+    <h2 class="section-title" style="margin-top:28px;">
+      📋 Task Overview
+    </h2>
+    <div class="stats-grid">
+
+      <div class="stat-card stat-purple">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+          <p class="stat-label">Total Tasks</p>
+          <h2 id="total-tasks">—</h2>
+        </div>
+      </div>
+
+      <div class="stat-card stat-gray">
+        <div class="stat-icon">📌</div>
+        <div class="stat-info">
+          <p class="stat-label">Todo</p>
+          <h2 id="todo-tasks">—</h2>
+        </div>
+      </div>
+
+      <div class="stat-card stat-green">
+        <div class="stat-icon">🏁</div>
+        <div class="stat-info">
+          <p class="stat-label">Done</p>
+          <h2 id="done-tasks">—</h2>
+        </div>
+      </div>
+
+      <!-- Admin only -->
+      <div class="stat-card stat-red"
+        id="pending-users-card" style="display:none;">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <p class="stat-label">Pending Approvals</p>
+          <h2 id="pending-users">—</h2>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── Quick Links ──────────────────────────────────── -->
+    <h2 class="section-title" style="margin-top:28px;">
+      ⚡ Quick Actions
+    </h2>
+    <div class="quick-links">
+      <a href="bugs.html" class="quick-card">
+        <span>🐛</span>
+        <p>Report Bug</p>
+      </a>
+      <a href="tasks.html" class="quick-card">
+        <span>📋</span>
+        <p>View Tasks</p>
+      </a>
+      <a href="bugs.html" class="quick-card">
+        <span>🔍</span>
+        <p>Filter Bugs</p>
+      </a>
+      <a href="admin.html"
+        id="admin-quick-card"
+        class="quick-card"
+        style="display:none;">
+        <span>👑</span>
+        <p>Admin Panel</p>
+      </a>
+    </div>
+
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

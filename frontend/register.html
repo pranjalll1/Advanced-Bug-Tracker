@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register | Bug Tracker</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body class="auth-body">
+
+  <div class="auth-container">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <span>🐛</span>
+      <h1>Bug Tracker</h1>
+      <p>Create your account</p>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+      <h2>Register</h2>
+      <p class="auth-subtitle">
+        Fill in your details — admin will approve your account
+      </p>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name"
+          placeholder="Enter your full name"/>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email"
+          placeholder="you@example.com"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-with-icon">
+          <input type="password" id="password"
+            placeholder="Min 8 characters, 1 uppercase, 1 number, 1 special"/>
+          <span onclick="togglePassword()"
+            class="eye-icon">👁</span>
+        </div>
+        <small class="field-hint">
+          e.g. Pranjal@123
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Role</label>
+        <select id="role">
+          <option value="tester">Tester</option>
+          <option value="developer">Developer</option>
+          <option value="manager">Project Manager</option>
+        </select>
+      </div>
+
+      <div id="register-error"
+        class="error-msg hidden"></div>
+      <div id="register-success"
+        class="success-msg hidden"></div>
+
+      <button onclick="register()"
+        id="register-btn" class="btn-full">
+        Create Account
+      </button>
+
+      <p class="auth-link">
+        Already have an account?
+        <a href="login.html">Sign in</a>
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const togglePassword = () => {
+      const input = document.getElementById('password');
+      input.type  = input.type === 'password' ? 'text' : 'password';
+    };
+
+    const register = async () => {
+      const name     = document.getElementById('name').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const role     = document.getElementById('role').value;
+      const errorEl  = document.getElementById('register-error');
+      const successEl= document.getElementById('register-success');
+      const btn      = document.getElementById('register-btn');
+
+      errorEl.classList.add('hidden');
+      successEl.classList.add('hidden');
+
+      // Validate
+      if (!name || !email || !password || !role) {
+        errorEl.textContent = 'All fields are required.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // Password regex check on frontend too
+      const passwordRegex =
+        /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        errorEl.textContent =
+          'Password needs: 8+ chars, 1 uppercase, 1 number, 1 special character.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.textContent = 'Creating account...';
+      btn.disabled    = true;
+
+      try {
+        const response = await fetch(
+          'http://localhost:8000/api/auth/register', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ name, email, password, role }),
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          errorEl.textContent = data.message;
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'Create Account';
+          btn.disabled    = false;
+          return;
+        }
+
+        // Show success message
+        successEl.textContent =
+          '✅ Account created! Please wait for admin approval before logging in.';
+        successEl.classList.remove('hidden');
+
+        btn.textContent = 'Registered!';
+
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 3000);
+
+      } catch (error) {
+        errorEl.textContent =
+          'Server error. Make sure backend is running.';
+        errorEl.classList.remove('hidden');
+        btn.textContent = 'Create Account';
+        btn.disabled    = false;
+      }
+    };
+  </script>
+</body>
+</html>

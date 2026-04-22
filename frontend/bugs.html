@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bugs | Bug Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">🐛 Bug Tracker</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="bugs.html" class="active">Bugs</a>
+      <a href="tasks.html">Tasks</a>
+      <span id="user-name"></span>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ─── Main Content ────────────────────────────────────── -->
+  <div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>🐛 Bug List</h1>
+      <button onclick="openCreateModal()" class="btn-primary">
+        + Report Bug
+      </button>
+    </div>
+
+    <!-- ─── Filters ─────────────────────────────────────── -->
+    <div class="filters">
+      <select id="filter-status" onchange="applyFilters()">
+        <option value="">All Status</option>
+        <option value="open">Open</option>
+        <option value="in-progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+        <option value="closed">Closed</option>
+        <option value="reopened">Reopened</option>
+      </select>
+
+      <select id="filter-severity" onchange="applyFilters()">
+        <option value="">All Severity</option>
+        <option value="critical">Critical</option>
+        <option value="major">Major</option>
+        <option value="minor">Minor</option>
+        <option value="trivial">Trivial</option>
+      </select>
+
+      <select id="filter-priority" onchange="applyFilters()">
+        <option value="">All Priority</option>
+        <option value="urgent">Urgent</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+
+      <input
+        type="text"
+        id="filter-search"
+        placeholder="🔍 Search bugs..."
+        oninput="applyFilters()"
+      />
+    </div>
+
+    <!-- ─── Bug Table ────────────────────────────────────── -->
+    <div class="table-wrapper">
+      <table class="bug-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Severity</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Reported By</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bug-table-body">
+          <!-- Bugs injected here by JS -->
+          <tr>
+            <td colspan="8" class="loading-text">Loading bugs...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button id="prev-btn" onclick="changePage(-1)" disabled>← Prev</button>
+      <span id="page-info">Page 1</span>
+      <button id="next-btn" onclick="changePage(1)">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- ─── Create Bug Modal ─────────────────────────────────── -->
+  <div id="create-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🐛 Report New Bug</h2>
+        <span onclick="closeCreateModal()" class="close-btn">✕</span>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="bug-title" placeholder="Short description of the bug" />
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="bug-description" rows="3"
+            placeholder="Detailed description..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Severity</label>
+            <select id="bug-severity">
+              <option value="minor">Minor</option>
+              <option value="major">Major</option>
+              <option value="critical">Critical</option>
+              <option value="trivial">Trivial</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="bug-priority">
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Project</label>
+          <input type="text" id="bug-project" placeholder="e.g. Web App v2" />
+        </div>
+
+        <div class="form-group">
+          <label>Steps to Reproduce</label>
+          <textarea id="bug-steps" rows="2"
+            placeholder="1. Go to... 2. Click..."></textarea>
+        </div>
+
+        <div id="create-error" class="error-msg hidden"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeCreateModal()" class="btn-secondary">Cancel</button>
+        <button onclick="createBug()" class="btn-primary">Submit Bug</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="modal-overlay" class="overlay hidden"
+    onclick="closeCreateModal()"></div>
+
+  <script src="js/bugs.js"></script>
+</body>
+</html>

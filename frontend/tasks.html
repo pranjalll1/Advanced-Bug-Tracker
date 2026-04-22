@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tasks | Bug Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ─── Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">🐛 Bug Tracker</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="bugs.html">Bugs</a>
+      <a href="tasks.html" class="active">Tasks</a>
+      <span id="user-name"></span>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ─── Main Content ────────────────────────────────────── -->
+  <div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>📋 Task List</h1>
+      <button onclick="openCreateModal()" id="create-task-btn"
+        class="btn-primary">
+        + Create Task
+      </button>
+    </div>
+
+    <!-- ─── Filters ─────────────────────────────────────── -->
+    <div class="filters">
+      <select id="filter-status" onchange="applyFilters()">
+        <option value="">All Status</option>
+        <option value="todo">Todo</option>
+        <option value="in-progress">In Progress</option>
+        <option value="in-review">In Review</option>
+        <option value="done">Done</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+
+      <select id="filter-priority" onchange="applyFilters()">
+        <option value="">All Priority</option>
+        <option value="urgent">Urgent</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+
+      <input
+        type="text"
+        id="filter-search"
+        placeholder="🔍 Search tasks..."
+        oninput="applyFilters()"
+      />
+    </div>
+
+    <!-- ─── Task Table ───────────────────────────────────── -->
+    <div class="table-wrapper">
+      <table class="bug-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Assigned To</th>
+            <th>Created By</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="task-table-body">
+          <tr>
+            <td colspan="8" class="loading-text">
+              Loading tasks...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button id="prev-btn" onclick="changePage(-1)" disabled>
+        ← Prev
+      </button>
+      <span id="page-info">Page 1</span>
+      <button id="next-btn" onclick="changePage(1)">
+        Next →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ─── Create Task Modal ────────────────────────────────── -->
+  <div id="create-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📋 Create New Task</h2>
+        <span onclick="closeCreateModal()" class="close-btn">✕</span>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="task-title"
+            placeholder="Short task title" />
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea id="task-description" rows="3"
+            placeholder="What needs to be done..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Priority</label>
+            <select id="task-priority">
+              <option value="medium">Medium</option>
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Due Date</label>
+            <input type="date" id="task-due-date" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Project</label>
+            <input type="text" id="task-project"
+              placeholder="e.g. Web App v2" />
+          </div>
+
+          <div class="form-group">
+            <label>Estimated Hours</label>
+            <input type="number" id="task-hours"
+              placeholder="e.g. 8" min="0" />
+          </div>
+        </div>
+
+        <div id="create-error" class="error-msg hidden"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeCreateModal()"
+          class="btn-secondary">Cancel</button>
+        <button onclick="createTask()"
+          class="btn-primary">Create Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Update Status Modal ──────────────────────────────── -->
+  <div id="status-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🔄 Update Task Status</h2>
+        <span onclick="closeStatusModal()" class="close-btn">✕</span>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>New Status</label>
+          <select id="new-status">
+            <option value="todo">Todo</option>
+            <option value="in-progress">In Progress</option>
+            <option value="in-review">In Review</option>
+            <option value="done">Done</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Progress % (0–100)</label>
+          <input type="number" id="new-progress"
+            min="0" max="100" placeholder="e.g. 50" />
+        </div>
+
+        <div id="status-error" class="error-msg hidden"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button onclick="closeStatusModal()"
+          class="btn-secondary">Cancel</button>
+        <button onclick="submitStatusUpdate()"
+          class="btn-primary">Update</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="modal-overlay" class="overlay hidden"
+    onclick="closeAllModals()"></div>
+
+  <script src="js/tasks.js"></script>
+</body>
+</html>
