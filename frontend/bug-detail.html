@@ -5,20 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bug Detail | Bug Tracker</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body>
+<body class="app-page">
 
-  <!-- ─── Navbar ─────────────────────────────────────────── -->
-  <nav class="navbar">
-    <div class="nav-brand">🐛 Bug Tracker</div>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="bugs.html" class="active">Bugs</a>
-      <a href="tasks.html">Tasks</a>
-      <span id="user-name"></span>
-      <button onclick="logout()" class="btn-logout">Logout</button>
+  <!-- Sidebar Layout -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fa-solid fa-bug"></i> BugTrackr
     </div>
-  </nav>
+    
+    <div class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">
+        <i class="fa-solid fa-chart-pie nav-icon"></i> Dashboard
+      </a>
+      <a href="bugs.html" class="nav-item active">
+        <i class="fa-solid fa-spider nav-icon"></i> Bugs
+      </a>
+      <a href="tasks.html" class="nav-item">
+        <i class="fa-solid fa-list-check nav-icon"></i> Tasks
+      </a>
+      <!-- Admin link shown only if user is admin -->
+      <a href="admin.html" class="nav-item" id="admin-link" style="display:none;">
+        <i class="fa-solid fa-crown nav-icon"></i> Admin Panel
+      </a>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">User Name</div>
+        <div class="user-role" id="user-role-badge">Role</div>
+      </div>
+      <button onclick="logout()" class="logout-btn" title="Logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>Bug Details</h2>
+        <p>Inspect and update bug information.</p>
+      </div>
+      <div class="topbar-actions">
+        <!-- Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="btn-icon" title="Toggle Dark Mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
 
   <div class="container">
 
@@ -63,7 +103,7 @@
       <div class="detail-grid">
 
         <div class="detail-card">
-          <h3>📋 Details</h3>
+          <h3><i class="fa-solid fa-circle-info" style="color: #3b82f6; margin-right: 6px;"></i> Details</h3>
           <table class="info-table">
             <tr>
               <td>Severity</td>
@@ -93,7 +133,7 @@
         </div>
 
         <div class="detail-card">
-          <h3>👥 People</h3>
+          <h3><i class="fa-solid fa-users" style="color: #a855f7; margin-right: 6px;"></i> People</h3>
           <table class="info-table">
             <tr>
               <td>Reported By</td>
@@ -133,7 +173,7 @@
 
       <!-- ─── Description ───────────────────────────────── -->
       <div class="detail-card" style="margin-top: 16px;">
-        <h3>📝 Description</h3>
+        <h3><i class="fa-solid fa-file-lines" style="color: #64748b; margin-right: 6px;"></i> Description</h3>
         <p id="bug-description" class="detail-text">—</p>
       </div>
 
@@ -142,14 +182,14 @@
         style="margin-top: 16px;">
 
         <div class="detail-card" id="steps-card">
-          <h3>🔁 Steps to Reproduce</h3>
+          <h3><i class="fa-solid fa-rotate" style="color: #f97316; margin-right: 6px;"></i> Steps to Reproduce</h3>
           <p id="bug-steps" class="detail-text">—</p>
         </div>
 
         <div class="detail-card">
-          <h3>✅ Expected Behavior</h3>
+          <h3><i class="fa-solid fa-circle-check" style="color: #22c55e; margin-right: 6px;"></i> Expected Behavior</h3>
           <p id="bug-expected" class="detail-text">—</p>
-          <h3 style="margin-top:16px;">❌ Actual Behavior</h3>
+          <h3 style="margin-top:16px;"><i class="fa-solid fa-circle-xmark" style="color: #ef4444; margin-right: 6px;"></i> Actual Behavior</h3>
           <p id="bug-actual" class="detail-text">—</p>
         </div>
 
@@ -158,13 +198,13 @@
       <!-- ─── Tags ──────────────────────────────────────── -->
       <div id="tags-section"
         style="margin-top: 16px; display: none;">
-        <h3>🏷️ Tags</h3>
+        <h3><i class="fa-solid fa-tags" style="color: #14b8a6; margin-right: 6px;"></i> Tags</h3>
         <div id="bug-tags" class="tags-container"></div>
       </div>
 
       <!-- ─── Comments Section ──────────────────────────── -->
       <div class="detail-card" style="margin-top: 24px;">
-        <h3>💬 Comments
+        <h3><i class="fa-solid fa-comments" style="color: #8b5cf6; margin-right: 6px;"></i> Comments
           <span id="comment-count"
             style="font-size:14px; color:#999;
                    font-weight:normal;">
@@ -201,5 +241,34 @@
   </div>
 
   <script src="js/bug-detail.js"></script>
+  <script>
+    // Dark Mode Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const icon = themeToggleBtn.querySelector('i');
+
+    // Check local storage for saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      icon.classList.replace('fa-moon', 'fa-sun');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        icon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        localStorage.setItem('theme', 'light');
+        icon.classList.replace('fa-sun', 'fa-moon');
+      }
+    });
+  </script>
+    <script src="js/avatar.js"></script>
+</main>
+
+  
+
+  <script src="js/ConfirmModal.js"></script>
 </body>
 </html>

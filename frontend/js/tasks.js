@@ -5,8 +5,19 @@ const user  = JSON.parse(localStorage.getItem('user'));
 if (!token) window.location.href = 'login.html';
 
 // Show username in navbar
-document.getElementById('user-name').textContent
-  = user?.name ?? '';
+document.getElementById('user-name').textContent = user?.name ?? '';
+
+
+// Role badge
+const roleBadge = document.getElementById('user-role-badge');
+if (roleBadge) {
+  const capitalize = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  roleBadge.textContent = capitalize(user?.role ?? '');
+  roleBadge.className = `user-role role-${user?.role}`;
+}
 
 // ─── Hide Create Button for non-managers/admins ───────────────
 // Only admin and manager can create tasks
@@ -121,7 +132,8 @@ const renderTasks = (tasks) => {
       </td>
       <td>${task.createdBy?.name ?? 'Unknown'}</td>
       <td>${formatDate(task.dueDate)}</td>
-      <td class="action-btns">
+      <td>
+        <div class="action-btns">
         <button
           onclick="openStatusModal('${task._id}', '${task.status}', ${task.progress ?? 0})"
           class="btn-small btn-view">
@@ -134,6 +146,7 @@ const renderTasks = (tasks) => {
                Delete
              </button>`
           : ''}
+        </div>
       </td>
     </tr>
   `).join('');
@@ -197,27 +210,34 @@ const createTask = async () => {
 };
 
 // ─── Delete Task ──────────────────────────────────────────────
-const deleteTask = async (taskId) => {
-  if (!confirm('Are you sure you want to delete this task?')) return;
+const deleteTask = (taskId) => {
+  showConfirm({
+    title: 'Delete Task',
+    message: 'Are you sure you want to delete this task? This action cannot be undone.',
+    confirmText: 'Delete',
+    type: 'danger',
+    onConfirm: async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/tasks/${taskId}`, {
+          method:  'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/tasks/${taskId}`, {
-      method:  'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          showToast('Task deleted successfully', 'success');
+          loadTasks(currentPage);
+        } else {
+          showAlert(data.message, 'danger');
+        }
 
-    if (data.success) {
-      loadTasks(currentPage);
-    } else {
-      alert(data.message);
+      } catch (error) {
+        showAlert('Failed to delete task.', 'danger');
+      }
     }
-
-  } catch (error) {
-    alert('Failed to delete task.');
-  }
+  });
 };
 
 // ─── Update Status ────────────────────────────────────────────
@@ -372,9 +392,17 @@ const showCreateError = (msg) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = 'login.html';
+  showConfirm({
+    title: 'Log Out',
+    message: 'Are you sure you want to log out?',
+    confirmText: 'Log Out',
+    type: 'danger',
+    onConfirm: () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  });
 };
 
 // ─── Init ─────────────────────────────────────────────────────

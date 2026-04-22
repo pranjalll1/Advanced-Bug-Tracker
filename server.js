@@ -28,6 +28,7 @@ const bugRoutes   = require('./routes/bugRoutes');
 const taskRoutes  = require('./routes/taskRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const userRoutes  = require('./routes/userRoutes');
 
 
 // ─── Mount Routes ─────────────────────────────────────────────
@@ -37,6 +38,7 @@ app.use('/api/bugs',  bugRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/users', userRoutes);
 
 
 // ─── Test Route ───────────────────────────────────────────────

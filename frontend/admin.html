@@ -1,141 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel | Bug Tracker</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body>
 
-  <!-- ─── Navbar ─────────────────────────────────────────── -->
-  <nav class="navbar">
-    <div class="nav-brand">🐛 Bug Tracker</div>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="bugs.html">Bugs</a>
-      <a href="tasks.html">Tasks</a>
-      <a href="admin.html" class="active">Admin</a>
-      <span id="user-name"></span>
-      <button onclick="logout()" class="btn-logout">Logout</button>
-    </div>
-  </nav>
+<body class="app-page">
 
-  <div class="container">
-
-    <div class="page-header">
-      <h1>👑 Admin Panel</h1>
+  <!-- Sidebar Layout -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fa-solid fa-bug"></i> BugTrackr
     </div>
 
-    <!-- ─── Tabs ────────────────────────────────────────── -->
-    <div class="tab-bar">
-      <button
-        class="tab-btn active"
-        onclick="switchTab('pending')">
-        🕐 Pending Approvals
-        <span id="pending-count" class="tab-badge">0</span>
+    <div class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">
+        <i class="fa-solid fa-chart-pie nav-icon"></i> Dashboard
+      </a>
+      <a href="bugs.html" class="nav-item">
+        <i class="fa-solid fa-spider nav-icon"></i> Bugs
+      </a>
+      <a href="tasks.html" class="nav-item">
+        <i class="fa-solid fa-list-check nav-icon"></i> Tasks
+      </a>
+      <!-- Admin link shown only if user is admin -->
+      <a href="admin.html" class="nav-item active" id="admin-link">
+        <i class="fa-solid fa-crown nav-icon"></i> Admin Panel
+      </a>
+      <a href="settings.html" class="nav-item">
+        <i class="fa-solid fa-gear nav-icon"></i> Settings
+      </a>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">User Name</div>
+        <div class="user-role" id="user-role-badge">Role</div>
+      </div>
+      <button onclick="logout()" class="logout-btn" title="Logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
       </button>
-      <button
-        class="tab-btn"
-        onclick="switchTab('all')">
-        👥 All Users
-      </button>
     </div>
+  </aside>
 
-    <!-- ─── Pending Users Tab ────────────────────────────── -->
-    <div id="tab-pending">
+  <!-- Main Content Area -->
+  <main class="main-content">
 
-      <div id="pending-empty" class="empty-state hidden">
-        <p>✅ No pending approvals right now!</p>
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>Admin Panel</h2>
+        <p>Manage users and permissions.</p>
+      </div>
+      <div class="topbar-actions">
+        <!-- Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="btn-icon" title="Toggle Dark Mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1><i class="fa-solid fa-crown"></i> Admin Panel</h1>
       </div>
 
-      <div id="pending-list" class="user-cards">
-        <p class="loading-text">Loading pending users...</p>
+      <!-- ─── Tabs ────────────────────────────────────────── -->
+      <div class="tab-bar" style="display: flex; gap: 10px; margin-bottom: 24px;">
+        <button class="tab-btn active" onclick="switchTab('pending')">
+          <i class="fa-regular fa-clock" style="margin-right: 6px;"></i> Pending Approvals
+          <span id="pending-count" class="tab-badge">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('all')">
+          <i class="fa-solid fa-users" style="margin-right: 6px;"></i> All Users
+        </button>
       </div>
 
-    </div>
+      <!-- ─── Pending Users Tab ────────────────────────────── -->
+      <div id="tab-pending">
 
-    <!-- ─── All Users Tab ───────────────────────────────── -->
-    <div id="tab-all" class="hidden">
+        <div id="pending-empty" class="empty-state hidden">
+          <p>✅ No pending approvals right now!</p>
+        </div>
 
-      <!-- Filters -->
-      <div class="filters" style="margin-bottom: 16px;">
-        <select id="filter-role" onchange="loadAllUsers()">
-          <option value="">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="manager">Manager</option>
-          <option value="developer">Developer</option>
-          <option value="tester">Tester</option>
-        </select>
+        <div id="pending-list" class="user-cards">
+          <p class="loading-text">Loading pending users...</p>
+        </div>
 
-        <select id="filter-status" onchange="loadAllUsers()">
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="pending">Pending</option>
-          <option value="rejected">Rejected</option>
-        </select>
       </div>
 
-      <div class="table-wrapper">
-        <table class="bug-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Registered</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="all-users-body">
-            <tr>
-              <td colspan="6" class="loading-text">
-                Loading users...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- ─── All Users Tab ───────────────────────────────── -->
+      <div id="tab-all" class="hidden">
 
-    </div>
-
-  </div>
-
-  <!-- ─── Change Role Modal ────────────────────────────────── -->
-  <div id="role-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>🔄 Change User Role</h2>
-        <span onclick="closeRoleModal()" class="close-btn">✕</span>
-      </div>
-      <div class="modal-body">
-        <p id="role-modal-user-name"
-          style="margin-bottom:12px; font-weight:600;">
-        </p>
-        <div class="form-group">
-          <label>New Role</label>
-          <select id="new-role">
-            <option value="tester">Tester</option>
-            <option value="developer">Developer</option>
-            <option value="manager">Manager</option>
+        <!-- Filters -->
+        <div class="filters" style="margin-bottom: 16px;">
+          <select id="filter-role" onchange="loadAllUsers()">
+            <option value="">All Roles</option>
             <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+            <option value="developer">Developer</option>
+            <option value="tester">Tester</option>
+          </select>
+
+          <select id="filter-status" onchange="loadAllUsers()">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="rejected">Rejected</option>
           </select>
         </div>
-        <div id="role-error" class="error-msg hidden"></div>
+
+        <div class="table-wrapper">
+          <table class="bug-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Registered</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="all-users-body">
+              <tr>
+                <td colspan="6" class="loading-text">
+                  Loading users...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
-      <div class="modal-footer">
-        <button onclick="closeRoleModal()"
-          class="btn-secondary">Cancel</button>
-        <button onclick="submitRoleChange()"
-          class="btn-primary">Update Role</button>
+
+    </div>
+
+    <!-- ─── Change Role Modal ────────────────────────────────── -->
+    <div id="role-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>🔄 Change User Role</h2>
+          <span onclick="closeRoleModal()" class="close-btn">✕</span>
+        </div>
+        <div class="modal-body">
+          <p id="role-modal-user-name" style="margin-bottom:12px; font-weight:600;">
+          </p>
+          <div class="form-group">
+            <label>New Role</label>
+            <select id="new-role">
+              <option value="tester">Tester</option>
+              <option value="developer">Developer</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div id="role-error" class="error-msg hidden"></div>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeRoleModal()" class="btn-secondary">Cancel</button>
+          <button onclick="submitRoleChange()" class="btn-primary">Update Role</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="modal-overlay" class="overlay hidden"
-    onclick="closeRoleModal()"></div>
+    <div id="modal-overlay" class="overlay hidden" onclick="closeRoleModal()"></div>
 
-  <script src="js/admin.js"></script>
+    <script src="js/admin.js"></script>
+    <script>
+      // Dark Mode Logic
+      const themeToggleBtn = document.getElementById('theme-toggle');
+      const icon = themeToggleBtn.querySelector('i');
+
+      // Check local storage for saved theme
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        icon.classList.replace('fa-moon', 'fa-sun');
+      }
+
+      themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+
+        if (document.body.classList.contains('dark-mode')) {
+          localStorage.setItem('theme', 'dark');
+          icon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+          localStorage.setItem('theme', 'light');
+          icon.classList.replace('fa-sun', 'fa-moon');
+        }
+      });
+    </script>
+    <script src="js/avatar.js"></script>
+</main>
+
+  <script src="js/ConfirmModal.js"></script>
 </body>
+
 </html>

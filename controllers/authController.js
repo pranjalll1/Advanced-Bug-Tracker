@@ -1,6 +1,7 @@
 // Import required packages
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 
 // ─── Password Validation Regex ────────────────────────────────
@@ -37,6 +38,15 @@ const registerUser = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'All fields are required: name, email, password, role',
+      });
+    }
+
+    // Validate name (no special characters allowed)
+    const nameRegex = /^[a-zA-Z0-9\s]+$/;
+    if (!nameRegex.test(name)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name cannot contain special characters.',
       });
     }
 
@@ -198,4 +208,84 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getMe };
+// ─── FORGOT PASSWORD ──────────────────────────────────────────
+// POST /api/auth/forgot-password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Please provide an email' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'There is no user with that email' });
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    
+    // Hash token and set to resetPasswordToken field
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    
+    // Set expire to 10 minutes
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    await user.save();
+
+    // Since we are simulating emails:
+    res.status(200).json({
+      success: true,
+      message: 'Email sent',
+      resetToken, // send plain token for frontend link simulation
+    });
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    res.status(500).json({ success: false, message: 'Email could not be sent' });
+  }
+};
+
+// ─── RESET PASSWORD ───────────────────────────────────────────
+// POST /api/auth/reset-password/:token
+const resetPassword = async (req, res) => {
+  try {
+    // Get hashed token
+    const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid token or token has expired' });
+    }
+
+    // Set new password
+    const { password } = req.body;
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters and include: 1 uppercase letter, 1 number, and 1 special character (e.g. Pranjal@123)',
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    console.error('Reset Password Error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getMe, forgotPassword, resetPassword };

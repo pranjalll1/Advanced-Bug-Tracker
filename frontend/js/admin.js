@@ -7,7 +7,7 @@ if (!token) {
   window.location.href = 'login.html';
 }
 if (user?.role !== 'admin') {
-  alert('Access denied. Admin only.');
+  showAlert('Access denied. Admin only.', 'danger');
   window.location.href = 'dashboard.html';
 }
 
@@ -17,6 +17,8 @@ document.getElementById('user-name').textContent
 // ─── State ────────────────────────────────────────────────────
 let selectedUserId   = null;
 let selectedUserName = '';
+
+// Removed old openConfirmModal
 
 // ─── Tab Switching ────────────────────────────────────────────
 const switchTab = (tab) => {
@@ -114,70 +116,82 @@ const renderPendingUsers = (users) => {
 };
 
 // ─── Approve User ─────────────────────────────────────────────
-const approveUser = async (userId, userName) => {
-  if (!confirm(`Approve ${userName}'s account?`)) return;
+const approveUser = (userId, userName) => {
+  showConfirm({
+    title: 'Approve User',
+    message: `Are you sure you want to approve ${userName}'s account?`,
+    confirmText: 'Approve',
+    type: 'success',
+    onConfirm: async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/admin/users/${userId}/approve`, {
+          method:  'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/admin/users/${userId}/approve`, {
-      method:  'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          // Remove card from pending list smoothly
+          const card = document.getElementById(`user-card-${userId}`);
+          if (card) {
+            card.style.opacity    = '0';
+            card.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+              card.remove();
+              loadPendingUsers(); // Refresh count
+            }, 300);
+          }
+          showToast(`${userName} approved successfully!`, 'success');
+        } else {
+          showAlert(data.message, 'danger');
+        }
 
-    if (data.success) {
-      // Remove card from pending list smoothly
-      const card = document.getElementById(`user-card-${userId}`);
-      if (card) {
-        card.style.opacity    = '0';
-        card.style.transition = 'opacity 0.3s';
-        setTimeout(() => {
-          card.remove();
-          loadPendingUsers(); // Refresh count
-        }, 300);
+      } catch (error) {
+        console.error('Approve error:', error);
       }
-      showToast(`✅ ${userName} approved successfully!`);
-    } else {
-      alert(`❌ ${data.message}`);
     }
-
-  } catch (error) {
-    console.error('Approve error:', error);
-  }
+  });
 };
 
 // ─── Reject User ──────────────────────────────────────────────
-const rejectUser = async (userId, userName) => {
-  if (!confirm(`Reject ${userName}'s account? They will not be able to login.`)) return;
+const rejectUser = (userId, userName) => {
+  showConfirm({
+    title: 'Reject User',
+    message: `Are you sure you want to reject ${userName}'s account? They will not be able to login.`,
+    confirmText: 'Reject',
+    type: 'danger',
+    onConfirm: async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/admin/users/${userId}/reject`, {
+          method:  'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/admin/users/${userId}/reject`, {
-      method:  'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          const card = document.getElementById(`user-card-${userId}`);
+          if (card) {
+            card.style.opacity    = '0';
+            card.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+              card.remove();
+              loadPendingUsers();
+            }, 300);
+          }
+          showToast(`${userName} rejected.`, 'success');
+        } else {
+          showAlert(data.message, 'danger');
+        }
 
-    if (data.success) {
-      const card = document.getElementById(`user-card-${userId}`);
-      if (card) {
-        card.style.opacity    = '0';
-        card.style.transition = 'opacity 0.3s';
-        setTimeout(() => {
-          card.remove();
-          loadPendingUsers();
-        }, 300);
+      } catch (error) {
+        console.error('Reject error:', error);
       }
-      showToast(`❌ ${userName} rejected.`);
-    } else {
-      alert(`❌ ${data.message}`);
     }
-
-  } catch (error) {
-    console.error('Reject error:', error);
-  }
+  });
 };
 
 // ─── Load All Users ───────────────────────────────────────────
@@ -250,7 +264,8 @@ const renderAllUsers = (users) => {
         </span>
       </td>
       <td>${formatDate(u.createdAt)}</td>
-      <td class="action-btns">
+      <td>
+        <div class="action-btns">
         ${u._id !== user.id
           ? `<button
                onclick="openRoleModal('${u._id}', '${u.name}', '${u.role}')"
@@ -263,6 +278,7 @@ const renderAllUsers = (users) => {
                Delete
              </button>`
           : '<span style="color:#bbb; font-size:12px;">—</span>'}
+        </div>
       </td>
     </tr>
   `).join('');
@@ -313,7 +329,7 @@ const submitRoleChange = async () => {
     if (data.success) {
       closeRoleModal();
       loadAllUsers();
-      showToast(`✅ ${selectedUserName}'s role updated to ${role}!`);
+      showToast(`${selectedUserName}'s role updated to ${role}!`, 'success');
     } else {
       document.getElementById('role-error').textContent
         = data.message;
@@ -327,64 +343,38 @@ const submitRoleChange = async () => {
 };
 
 // ─── Delete User ──────────────────────────────────────────────
-const deleteUser = async (userId, userName) => {
-  if (!confirm(
-    `Permanently delete ${userName}? This cannot be undone.`
-  )) return;
+const deleteUser = (userId, userName) => {
+  showConfirm({
+    title: 'Delete User',
+    message: `Permanently delete ${userName}? This cannot be undone.`,
+    confirmText: 'Delete',
+    type: 'danger',
+    onConfirm: async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/admin/users/${userId}`, {
+          method:  'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/admin/users/${userId}`, {
-      method:  'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          loadAllUsers();
+          showToast(`${userName} deleted.`, 'success');
+        } else {
+          showAlert(data.message, 'danger');
+        }
 
-    if (data.success) {
-      loadAllUsers();
-      showToast(`🗑 ${userName} deleted.`);
-    } else {
-      alert(`❌ ${data.message}`);
+      } catch (error) {
+        console.error('Delete user error:', error);
+      }
     }
-
-  } catch (error) {
-    console.error('Delete user error:', error);
-  }
+  });
 };
 
 // ─── Toast Notification ───────────────────────────────────────
-const showToast = (message) => {
-  // Remove existing toast if any
-  const existing = document.getElementById('toast');
-  if (existing) existing.remove();
-
-  const toast = document.createElement('div');
-  toast.id            = 'toast';
-  toast.textContent   = message;
-  toast.style.cssText = `
-    position:      fixed;
-    bottom:        24px;
-    right:         24px;
-    background:    #2c3e50;
-    color:         white;
-    padding:       12px 20px;
-    border-radius: 8px;
-    font-size:     14px;
-    z-index:       9999;
-    box-shadow:    0 4px 12px rgba(0,0,0,0.2);
-    animation:     slideIn 0.3s ease;
-  `;
-
-  document.body.appendChild(toast);
-
-  // Auto remove after 3 seconds
-  setTimeout(() => {
-    toast.style.opacity    = '0';
-    toast.style.transition = 'opacity 0.3s';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-};
+// Removed local showToast to use global Toast.show
 
 // ─── Helpers ──────────────────────────────────────────────────
 const capitalize = (str) => {
@@ -402,9 +392,17 @@ const formatDate = (dateStr) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = 'login.html';
+  showConfirm({
+    title: 'Log Out',
+    message: 'Are you sure you want to log out?',
+    confirmText: 'Log Out',
+    type: 'danger',
+    onConfirm: () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  });
 };
 
 // ─── Init ─────────────────────────────────────────────────────

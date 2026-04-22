@@ -1,159 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard | Bug Tracker</title>
-  <link rel="stylesheet" href="css/style.css"/>
-</head>
-<body>
 
-  <!-- ─── Navbar ─────────────────────────────────────────── -->
-  <nav class="navbar">
-    <div class="nav-brand">🐛 Bug Tracker</div>
-    <div class="nav-links">
-      <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="bugs.html">Bugs</a>
-      <a href="tasks.html">Tasks</a>
-      <span id="admin-link"></span>
-      <span class="nav-user">
-        👤 <span id="user-name"></span>
-        <span id="user-role-badge"></span>
-      </span>
-      <button onclick="logout()" class="btn-logout">
-        Logout
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | BugTrackr</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body class="app-page">
+
+  <!-- Sidebar Layout -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fa-solid fa-bug"></i> BugTrackr
+    </div>
+
+    <div class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item active">
+        <i class="fa-solid fa-chart-pie nav-icon"></i> Dashboard
+      </a>
+      <a href="bugs.html" class="nav-item">
+        <i class="fa-solid fa-spider nav-icon"></i> Bugs
+      </a>
+      <a href="tasks.html" class="nav-item">
+        <i class="fa-solid fa-list-check nav-icon"></i> Tasks
+      </a>
+      <!-- Admin link shown only if user is admin -->
+      <a href="admin.html" class="nav-item" id="admin-link" style="display:none;">
+        <i class="fa-solid fa-crown nav-icon"></i> Admin Panel
+      </a>
+      <a href="settings.html" class="nav-item">
+        <i class="fa-solid fa-gear nav-icon"></i> Settings
+      </a>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">User Name</div>
+        <div class="user-role" id="user-role-badge">Role</div>
+      </div>
+      <button onclick="logout()" class="logout-btn" title="Logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>
-  </nav>
+  </aside>
 
-  <div class="container">
+  <!-- Main Content Area -->
+  <main class="main-content">
 
-    <!-- Welcome Banner -->
-    <div class="welcome-banner">
-      <div>
-        <h1 id="welcome-text">Welcome back! 👋</h1>
-        <p id="welcome-sub">Here's your project overview</p>
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>Dashboard Overview</h2>
+        <p>Track your project's health and tasks.</p>
       </div>
-      <div class="banner-actions">
-        <a href="bugs.html" class="btn-primary">
-          🐛 View Bugs
-        </a>
-        <a href="tasks.html" class="btn-secondary"
-          style="text-decoration:none; padding:10px 20px;
-                 border-radius:6px;">
-          📋 View Tasks
-        </a>
+      <div class="topbar-actions">
+        <!-- Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="btn-icon" title="Toggle Dark Mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
       </div>
-    </div>
+    </header>
 
-    <!-- ─── Bug Stats ────────────────────────────────────── -->
-    <h2 class="section-title">🐛 Bug Overview</h2>
-    <div class="stats-grid">
+    <div class="container">
 
-      <div class="stat-card stat-blue">
-        <div class="stat-icon">🐛</div>
-        <div class="stat-info">
-          <p class="stat-label">Total Bugs</p>
-          <h2 id="total-bugs">—</h2>
+      <!-- Welcome Banner -->
+      <div class="modern-banner">
+        <div>
+          <h1 id="welcome-text">Overview </h1>
+          <p id="welcome-sub">Manage your tasks and keep bugs under control.</p>
+        </div>
+        <div class="banner-actions">
+          <a href="bugs.html" class="btn btn-primary" style="background: white; color: #3b82f6;"><i
+              class="fa-solid fa-plus"></i> Report Bug</a>
         </div>
       </div>
 
-      <div class="stat-card stat-orange">
-        <div class="stat-icon">🔓</div>
-        <div class="stat-info">
-          <p class="stat-label">Open Bugs</p>
-          <h2 id="open-bugs">—</h2>
+      <!-- Bug Stats -->
+      <h2 class="section-title"><i class="fa-solid fa-spider" style="color: #3b82f6;"></i> Bug Overview</h2>
+      <div class="stats-grid">
+
+        <div class="stat-card stat-blue">
+          <div class="stat-icon"><i class="fa-solid fa-bug" style="color: #3b82f6;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">Total Bugs</p>
+            <h2 class="stat-number" id="total-bugs">—</h2>
+          </div>
         </div>
+
+        <div class="stat-card stat-green">
+          <div class="stat-icon"><i class="fa-solid fa-check-circle" style="color: #22c55e;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">Resolved Bugs</p>
+            <h2 class="stat-number" id="resolved-bugs">—</h2>
+          </div>
+        </div>
+
+        <div class="stat-card stat-orange">
+          <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left" style="color: #f97316;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">Pending Bugs</p>
+            <h2 class="stat-number" id="pending-bugs">—</h2>
+          </div>
+        </div>
+
       </div>
 
-      <div class="stat-card stat-yellow">
-        <div class="stat-icon">⚙️</div>
-        <div class="stat-info">
-          <p class="stat-label">In Progress</p>
-          <h2 id="inprogress-bugs">—</h2>
+
+      <!-- Task Stats -->
+      <h2 class="section-title" style="margin-top:40px;"><i class="fa-solid fa-list-check" style="color: #a855f7;"></i>
+        Task Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card stat-purple">
+          <div class="stat-icon"><i class="fa-solid fa-clipboard" style="color: #a855f7;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">Total Tasks</p>
+            <h2 class="stat-number" id="total-tasks">—</h2>
+          </div>
         </div>
-      </div>
-
-      <div class="stat-card stat-green">
-        <div class="stat-icon">✅</div>
-        <div class="stat-info">
-          <p class="stat-label">Resolved</p>
-          <h2 id="resolved-bugs">—</h2>
+        <div class="stat-card stat-gray">
+          <div class="stat-icon"><i class="fa-solid fa-thumbtack" style="color: #64748b;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">To Do</p>
+            <h2 class="stat-number" id="todo-tasks">—</h2>
+          </div>
         </div>
-      </div>
-
-    </div>
-
-    <!-- ─── Task Stats ───────────────────────────────────── -->
-    <h2 class="section-title" style="margin-top:28px;">
-      📋 Task Overview
-    </h2>
-    <div class="stats-grid">
-
-      <div class="stat-card stat-purple">
-        <div class="stat-icon">📋</div>
-        <div class="stat-info">
-          <p class="stat-label">Total Tasks</p>
-          <h2 id="total-tasks">—</h2>
+        <div class="stat-card stat-green">
+          <div class="stat-icon"><i class="fa-solid fa-flag-checkered" style="color: #22c55e;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">Done</p>
+            <h2 class="stat-number" id="done-tasks">—</h2>
+          </div>
         </div>
-      </div>
-
-      <div class="stat-card stat-gray">
-        <div class="stat-icon">📌</div>
-        <div class="stat-info">
-          <p class="stat-label">Todo</p>
-          <h2 id="todo-tasks">—</h2>
-        </div>
-      </div>
-
-      <div class="stat-card stat-green">
-        <div class="stat-icon">🏁</div>
-        <div class="stat-info">
-          <p class="stat-label">Done</p>
-          <h2 id="done-tasks">—</h2>
-        </div>
-      </div>
-
-      <!-- Admin only -->
-      <div class="stat-card stat-red"
-        id="pending-users-card" style="display:none;">
-        <div class="stat-icon">👥</div>
-        <div class="stat-info">
-          <p class="stat-label">Pending Approvals</p>
-          <h2 id="pending-users">—</h2>
+        <div class="stat-card stat-red" id="pending-users-card" style="display:none;">
+          <div class="stat-icon"><i class="fa-solid fa-users-gear" style="color: #ef4444;"></i></div>
+          <div class="stat-info">
+            <p class="stat-label">Pending Users</p>
+            <h2 class="stat-number" id="pending-users">—</h2>
+          </div>
         </div>
       </div>
 
     </div>
+    <script src="js/avatar.js"></script>
+  </main>
 
-    <!-- ─── Quick Links ──────────────────────────────────── -->
-    <h2 class="section-title" style="margin-top:28px;">
-      ⚡ Quick Actions
-    </h2>
-    <div class="quick-links">
-      <a href="bugs.html" class="quick-card">
-        <span>🐛</span>
-        <p>Report Bug</p>
-      </a>
-      <a href="tasks.html" class="quick-card">
-        <span>📋</span>
-        <p>View Tasks</p>
-      </a>
-      <a href="bugs.html" class="quick-card">
-        <span>🔍</span>
-        <p>Filter Bugs</p>
-      </a>
-      <a href="admin.html"
-        id="admin-quick-card"
-        class="quick-card"
-        style="display:none;">
-        <span>👑</span>
-        <p>Admin Panel</p>
-      </a>
-    </div>
-
-  </div>
-
+  <!-- Script for Dashboard Logic and Dark Mode -->
   <script src="js/dashboard.js"></script>
+  <script>
+    // Dark Mode Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const icon = themeToggleBtn.querySelector('i');
+
+    // Check local storage for saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      icon.classList.replace('fa-moon', 'fa-sun');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        icon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        localStorage.setItem('theme', 'light');
+        icon.classList.replace('fa-sun', 'fa-moon');
+      }
+    });
+  </script>
+
+
+
+  <script src="js/ConfirmModal.js"></script>
 </body>
+
 </html>

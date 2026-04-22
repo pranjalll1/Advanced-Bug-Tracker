@@ -134,9 +134,9 @@ const updateStatus = async () => {
       const staEl = document.getElementById('bug-status');
       staEl.textContent = capitalize(status);
       staEl.className   = `badge status-${status}`;
-      alert(`✅ Status updated to: ${status}`);
+      showToast(`Status updated to: ${status}`, 'success');
     } else {
-      alert(`❌ ${data.message}`);
+      showAlert(data.message, 'danger');
     }
 
   } catch (error) {
@@ -174,7 +174,7 @@ const assignBug = async () => {
   const developerId = document.getElementById('developer-select').value;
 
   if (!developerId) {
-    alert('Please select a developer.');
+    showAlert('Please select a developer.', 'warning');
     return;
   }
 
@@ -195,9 +195,9 @@ const assignBug = async () => {
       // Update assigned to field live
       document.getElementById('bug-assigned-to').textContent
         = data.bug.assignedTo?.name || 'Assigned';
-      alert(`✅ Bug assigned successfully!`);
+      showToast(`Bug assigned successfully!`, 'success');
     } else {
-      alert(`❌ ${data.message}`);
+      showAlert(data.message, 'danger');
     }
 
   } catch (error) {
@@ -283,12 +283,12 @@ const addComment = async () => {
   const text = document.getElementById('comment-text').value.trim();
 
   if (!text) {
-    alert('Please write a comment first.');
+    showAlert('Please write a comment first.', 'warning');
     return;
   }
 
   if (text.length < 2) {
-    alert('Comment must be at least 2 characters.');
+    showAlert('Comment must be at least 2 characters.', 'warning');
     return;
   }
 
@@ -313,7 +313,7 @@ const addComment = async () => {
       document.getElementById('comment-text').value = '';
       loadComments();
     } else {
-      alert(`❌ ${data.message}`);
+      showAlert(data.message, 'danger');
     }
 
   } catch (error) {
@@ -322,27 +322,34 @@ const addComment = async () => {
 };
 
 // ─── Delete Comment ───────────────────────────────────────────
-const deleteComment = async (commentId) => {
-  if (!confirm('Delete this comment?')) return;
+const deleteComment = (commentId) => {
+  showConfirm({
+    title: 'Delete Comment',
+    message: 'Are you sure you want to delete this comment?',
+    confirmText: 'Delete',
+    type: 'danger',
+    onConfirm: async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/comments/${commentId}`, {
+          method:  'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/comments/${commentId}`, {
-      method:  'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          showToast('Comment deleted', 'success');
+          loadComments();
+        } else {
+          showAlert(data.message, 'danger');
+        }
 
-    if (data.success) {
-      loadComments();
-    } else {
-      alert(data.message);
+      } catch (error) {
+        console.error('Delete comment error:', error);
+      }
     }
-
-  } catch (error) {
-    console.error('Delete comment error:', error);
-  }
+  });
 };
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -361,9 +368,17 @@ const formatDate = (dateStr) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = 'login.html';
+  showConfirm({
+    title: 'Log Out',
+    message: 'Are you sure you want to log out?',
+    confirmText: 'Log Out',
+    type: 'danger',
+    onConfirm: () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  });
 };
 
 // ─── Init ─────────────────────────────────────────────────────

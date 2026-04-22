@@ -1,157 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register | Bug Tracker</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <title>BugTrackr — Register</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body class="auth-body">
+<body class="auth-split-page">
 
-  <div class="auth-container">
-
-    <!-- Logo -->
-    <div class="auth-logo">
-      <span>🐛</span>
-      <h1>Bug Tracker</h1>
-      <p>Create your account</p>
+  <div class="auth-split-layout">
+    
+    <!-- Left Side: Image & Branding -->
+    <div class="auth-split-left">
+      <div class="auth-split-left-content fade-in-up">
+        <h1>Join BugTrackr</h1>
+        <p>The premium issue tracking and project management platform for modern software teams.</p>
+      </div>
     </div>
 
-    <!-- Card -->
-    <div class="auth-card">
-      <h2>Register</h2>
-      <p class="auth-subtitle">
-        Fill in your details — admin will approve your account
-      </p>
+    <!-- Right Side: Form & Navbar -->
+    <div class="auth-split-right">
+      
+      <!-- Back to Home Navbar -->
+      <nav class="auth-navbar">
+        <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+      </nav>
 
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="name"
-          placeholder="Enter your full name"/>
-      </div>
+      <!-- Registration Form Container -->
+      <div class="auth-split-form-container fade-in-up delay-1">
+        <div class="auth-header">
+      <div class="auth-logo"><i class="fa-solid fa-user-plus"></i></div>
+      <h1>Create Account</h1>
+      <p>Fill in your details to join the workspace</p>
+    </div>
 
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="email"
-          placeholder="you@example.com"/>
-      </div>
+    <!-- Success Message Box -->
+    <div class="alert alert-success" id="successMsg" style="display:none;">
+      <i class="fa-solid fa-check-circle"></i>
+      <span></span>
+    </div>
 
+    <!-- Error Message Box -->
+    <div class="alert alert-error" id="errorMsg" style="display:none;">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span></span>
+    </div>
+
+    <!-- Register Form -->
+    <form id="registerForm" novalidate>
+      
+      <!-- Full Name -->
       <div class="form-group">
-        <label>Password</label>
-        <div class="input-with-icon">
-          <input type="password" id="password"
-            placeholder="Min 8 characters, 1 uppercase, 1 number, 1 special"/>
-          <span onclick="togglePassword()"
-            class="eye-icon">👁</span>
+        <label for="name">Full Name</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-user icon"></i>
+          <input type="text" id="name" placeholder="John Doe" required />
         </div>
-        <small class="field-hint">
-          e.g. Pranjal@123
-        </small>
       </div>
 
+      <!-- Email Field -->
       <div class="form-group">
-        <label>Role</label>
-        <select id="role">
-          <option value="tester">Tester</option>
-          <option value="developer">Developer</option>
-          <option value="manager">Project Manager</option>
-        </select>
+        <label for="email">Email Address</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-regular fa-envelope icon"></i>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </div>
       </div>
 
-      <div id="register-error"
-        class="error-msg hidden"></div>
-      <div id="register-success"
-        class="success-msg hidden"></div>
+      <!-- Role Field -->
+      <div class="form-group">
+        <label for="role">Role</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-users icon"></i>
+          <select id="role" required>
+            <option value="tester">Tester</option>
+            <option value="developer">Developer</option>
+            <option value="manager">Project Manager</option>
+          </select>
+        </div>
+      </div>
 
-      <button onclick="register()"
-        id="register-btn" class="btn-full">
-        Create Account
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-lock icon"></i>
+          <input type="password" id="password" placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special" required />
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-icon-wrapper">
+          <i class="fa-solid fa-lock icon"></i>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
+        </div>
+      </div>
+
+      <!-- Password Rules (dynamically checked by auth.js) -->
+      <div class="password-rules">
+        <span class="rule fail" id="rule-length">✗ At least 8 characters</span>
+        <span class="rule fail" id="rule-upper">✗ At least 1 uppercase letter</span>
+        <span class="rule fail" id="rule-number">✗ At least 1 number</span>
+        <span class="rule fail" id="rule-special">✗ At least 1 special character</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary btn-block" id="registerBtn">
+        Create Account <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i>
       </button>
 
-      <p class="auth-link">
-        Already have an account?
-        <a href="login.html">Sign in</a>
-      </p>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="login.html">Sign In</a>
     </div>
+    </div> <!-- End auth-split-form-container -->
+    </div> <!-- End auth-split-right -->
+  </div> <!-- End auth-split-layout -->
 
-  </div>
-
-  <script>
-    const togglePassword = () => {
-      const input = document.getElementById('password');
-      input.type  = input.type === 'password' ? 'text' : 'password';
-    };
-
-    const register = async () => {
-      const name     = document.getElementById('name').value.trim();
-      const email    = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const role     = document.getElementById('role').value;
-      const errorEl  = document.getElementById('register-error');
-      const successEl= document.getElementById('register-success');
-      const btn      = document.getElementById('register-btn');
-
-      errorEl.classList.add('hidden');
-      successEl.classList.add('hidden');
-
-      // Validate
-      if (!name || !email || !password || !role) {
-        errorEl.textContent = 'All fields are required.';
-        errorEl.classList.remove('hidden');
-        return;
-      }
-
-      // Password regex check on frontend too
-      const passwordRegex =
-        /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-      if (!passwordRegex.test(password)) {
-        errorEl.textContent =
-          'Password needs: 8+ chars, 1 uppercase, 1 number, 1 special character.';
-        errorEl.classList.remove('hidden');
-        return;
-      }
-
-      btn.textContent = 'Creating account...';
-      btn.disabled    = true;
-
-      try {
-        const response = await fetch(
-          'http://localhost:8000/api/auth/register', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ name, email, password, role }),
-        });
-
-        const data = await response.json();
-
-        if (!data.success) {
-          errorEl.textContent = data.message;
-          errorEl.classList.remove('hidden');
-          btn.textContent = 'Create Account';
-          btn.disabled    = false;
-          return;
-        }
-
-        // Show success message
-        successEl.textContent =
-          '✅ Account created! Please wait for admin approval before logging in.';
-        successEl.classList.remove('hidden');
-
-        btn.textContent = 'Registered!';
-
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          window.location.href = 'login.html';
-        }, 3000);
-
-      } catch (error) {
-        errorEl.textContent =
-          'Server error. Make sure backend is running.';
-        errorEl.classList.remove('hidden');
-        btn.textContent = 'Create Account';
-        btn.disabled    = false;
-      }
-    };
-  </script>
+  <script src="js/auth.js"></script>
+  <script src="js/ConfirmModal.js"></script>
 </body>
 </html>

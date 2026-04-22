@@ -5,28 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bugs | Bug Tracker</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
-<body>
+<body class="app-page">
 
-  <!-- ─── Navbar ─────────────────────────────────────────── -->
-  <nav class="navbar">
-    <div class="nav-brand">🐛 Bug Tracker</div>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="bugs.html" class="active">Bugs</a>
-      <a href="tasks.html">Tasks</a>
-      <span id="user-name"></span>
-      <button onclick="logout()" class="btn-logout">Logout</button>
+  <!-- Sidebar Layout -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fa-solid fa-bug"></i> BugTrackr
     </div>
-  </nav>
+    
+    <div class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item">
+        <i class="fa-solid fa-chart-pie nav-icon"></i> Dashboard
+      </a>
+      <a href="bugs.html" class="nav-item active">
+        <i class="fa-solid fa-spider nav-icon"></i> Bugs
+      </a>
+      <a href="tasks.html" class="nav-item">
+        <i class="fa-solid fa-list-check nav-icon"></i> Tasks
+      </a>
+      <!-- Admin link shown only if user is admin -->
+      <a href="admin.html" class="nav-item" id="admin-link" style="display:none;">
+        <i class="fa-solid fa-crown nav-icon"></i> Admin Panel
+      </a>
+      <a href="settings.html" class="nav-item">
+        <i class="fa-solid fa-gear nav-icon"></i> Settings
+      </a>
+    </div>
 
-  <!-- ─── Main Content ────────────────────────────────────── -->
+    <div class="sidebar-user">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">User Name</div>
+        <div class="user-role" id="user-role-badge">Role</div>
+      </div>
+      <button onclick="logout()" class="logout-btn" title="Logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>Bug Tracking</h2>
+        <p>Manage and resolve issues.</p>
+      </div>
+      <div class="topbar-actions">
+        <!-- Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="btn-icon" title="Toggle Dark Mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
   <div class="container">
 
     <!-- Page Header -->
     <div class="page-header">
-      <h1>🐛 Bug List</h1>
-      <button onclick="openCreateModal()" class="btn-primary">
+      <h1><i class="fa-solid fa-bug"></i> Bug List</h1>
+      <button id="report-bug-btn" onclick="openCreateModal()" class="btn-primary">
         + Report Bug
       </button>
     </div>
@@ -167,5 +208,34 @@
     onclick="closeCreateModal()"></div>
 
   <script src="js/bugs.js"></script>
+  <script>
+    // Dark Mode Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const icon = themeToggleBtn.querySelector('i');
+
+    // Check local storage for saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      icon.classList.replace('fa-moon', 'fa-sun');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        icon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        localStorage.setItem('theme', 'light');
+        icon.classList.replace('fa-sun', 'fa-moon');
+      }
+    });
+  </script>
+    <script src="js/avatar.js"></script>
+</main>
+
+  
+
+  <script src="js/ConfirmModal.js"></script>
 </body>
 </html>

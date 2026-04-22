@@ -1,39 +1,67 @@
 // ─── Auth Check ───────────────────────────────────────────────
 const token = localStorage.getItem('token');
-const user  = JSON.parse(localStorage.getItem('user'));
+const user = JSON.parse(localStorage.getItem('user'));
+// Hide "Report Bug" option for everyone except testers
+if (user && user.role !== 'tester') {
+
+  // Target the "+ Report Bug" button in bugs.html
+  const bugsPageBtn = document.getElementById('report-bug-btn');
+  if (bugsPageBtn) {
+    bugsPageBtn.style.display = 'none';
+  }
+
+  // Target the "Report Bug" button in the dashboard.html banner
+  const dashboardBtn = document.querySelector('.banner-actions');
+  if (dashboardBtn) {
+    dashboardBtn.style.display = 'none';
+  }
+}
+
 
 if (!token) window.location.href = 'login.html';
 
 // Show username in navbar
 document.getElementById('user-name').textContent = user?.name ?? '';
 
+
+// Role badge
+const roleBadge = document.getElementById('user-role-badge');
+if (roleBadge) {
+  const capitalize = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  roleBadge.textContent = capitalize(user?.role ?? '');
+  roleBadge.className = `user-role role-${user?.role}`;
+}
+
 // ─── State ────────────────────────────────────────────────────
 let currentPage = 1;
-let totalPages  = 1;
+let totalPages = 1;
 
 // ─── Fetch & Render Bugs ──────────────────────────────────────
 const loadBugs = async (page = 1) => {
   try {
-    const status   = document.getElementById('filter-status').value;
+    const status = document.getElementById('filter-status').value;
     const severity = document.getElementById('filter-severity').value;
     const priority = document.getElementById('filter-priority').value;
-    const search   = document.getElementById('filter-search').value;
+    const search = document.getElementById('filter-search').value;
 
     let url = `http://localhost:8000/api/bugs?page=${page}&limit=10`;
-    if (status)   url += `&status=${status}`;
+    if (status) url += `&status=${status}`;
     if (severity) url += `&severity=${severity}`;
     if (priority) url += `&priority=${priority}`;
-    if (search)   url += `&search=${encodeURIComponent(search)}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
 
     // Debug — shows in browser console
     console.log('📡 Fetching:', url);
     console.log('👤 Logged in as:', user?.name, '| Role:', user?.role);
 
     const response = await fetch(url, {
-      method:  'GET',
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type':  'application/json',
+        'Content-Type': 'application/json',
       },
     });
 
@@ -55,8 +83,8 @@ const loadBugs = async (page = 1) => {
       return;
     }
 
-    currentPage = data.page       || 1;
-    totalPages  = data.totalPages || 1;
+    currentPage = data.page || 1;
+    totalPages = data.totalPages || 1;
 
     updatePagination();
     renderBugs(data.bugs);
@@ -86,8 +114,8 @@ const renderBugs = (bugs) => {
       <td>
         <strong>${bug.title}</strong>
         ${bug.project
-          ? `<br><small>📁 ${bug.project}</small>`
-          : ''}
+      ? `<br><small>📁 ${bug.project}</small>`
+      : ''}
       </td>
       <td>
         <span class="badge severity-${bug.severity}">
@@ -106,23 +134,25 @@ const renderBugs = (bugs) => {
       </td>
       <td>
         ${bug.assignedTo?.name
-          ?? '<span class="unassigned">Unassigned</span>'}
+    ?? '<span class="unassigned">Unassigned</span>'}
       </td>
       <td>${bug.reportedBy?.name ?? 'Unknown'}</td>
       <td>${formatDate(bug.createdAt)}</td>
-      <td class="action-btns">
+      <td>
+        <div class="action-btns">
         <button
           onclick="viewBug('${bug._id}')"
           class="btn-small btn-view">
           View
         </button>
         ${canDelete()
-          ? `<button
+      ? `<button
                onclick="deleteBug('${bug._id}')"
                class="btn-small btn-delete">
                Delete
              </button>`
-          : ''}
+      : ''}
+        </div>
       </td>
     </tr>
   `).join('');
@@ -130,12 +160,12 @@ const renderBugs = (bugs) => {
 
 // ─── Create Bug ───────────────────────────────────────────────
 const createBug = async () => {
-  const title       = document.getElementById('bug-title').value.trim();
+  const title = document.getElementById('bug-title').value.trim();
   const description = document.getElementById('bug-description').value.trim();
-  const severity    = document.getElementById('bug-severity').value;
-  const priority    = document.getElementById('bug-priority').value;
-  const project     = document.getElementById('bug-project').value.trim();
-  const steps       = document.getElementById('bug-steps').value.trim();
+  const severity = document.getElementById('bug-severity').value;
+  const priority = document.getElementById('bug-priority').value;
+  const project = document.getElementById('bug-project').value.trim();
+  const steps = document.getElementById('bug-steps').value.trim();
 
   if (!title || !description) {
     showCreateError('Title and description are required.');
@@ -154,10 +184,10 @@ const createBug = async () => {
 
   try {
     const response = await fetch('http://localhost:8000/api/bugs', {
-      method:  'POST',
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type':  'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         title,
@@ -187,33 +217,40 @@ const createBug = async () => {
 };
 
 // ─── Delete Bug ───────────────────────────────────────────────
-const deleteBug = async (bugId) => {
-  if (!confirm('Are you sure you want to delete this bug?')) return;
+const deleteBug = (bugId) => {
+  showConfirm({
+    title: 'Delete Bug',
+    message: 'Are you sure you want to delete this bug? This action cannot be undone.',
+    confirmText: 'Delete',
+    type: 'danger',
+    onConfirm: async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/bugs/${bugId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `http://localhost:8000/api/bugs/${bugId}`, {
-      method:  'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          showToast('Bug deleted successfully', 'success');
+          loadBugs(currentPage);
+        } else {
+          showAlert(data.message, 'danger');
+        }
 
-    if (data.success) {
-      loadBugs(currentPage);
-    } else {
-      alert(data.message);
+      } catch (error) {
+        showAlert('Failed to delete bug.', 'danger');
+      }
     }
-
-  } catch (error) {
-    alert('Failed to delete bug.');
-  }
+  });
 };
 
 // ─── View Bug ─────────────────────────────────────────────────
 const viewBug = (bugId) => {
   localStorage.setItem('selectedBugId', bugId);
-  window.location.href='bug-detail.html';
+  window.location.href = 'bug-detail.html';
 
 };
 
@@ -254,10 +291,10 @@ const closeCreateModal = () => {
     .classList.add('hidden');
   document.getElementById('modal-overlay')
     .classList.add('hidden');
-  document.getElementById('bug-title').value       = '';
+  document.getElementById('bug-title').value = '';
   document.getElementById('bug-description').value = '';
-  document.getElementById('bug-project').value     = '';
-  document.getElementById('bug-steps').value       = '';
+  document.getElementById('bug-project').value = '';
+  document.getElementById('bug-steps').value = '';
 };
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -269,9 +306,9 @@ const capitalize = (str) => {
 const formatDate = (dateStr) => {
   if (!dateStr) return '-';
   return new Date(dateStr).toLocaleDateString('en-IN', {
-    day:   '2-digit',
+    day: '2-digit',
     month: 'short',
-    year:  'numeric',
+    year: 'numeric',
   });
 };
 
@@ -289,9 +326,17 @@ const showCreateError = (msg) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = 'login.html';
+  showConfirm({
+    title: 'Log Out',
+    message: 'Are you sure you want to log out?',
+    confirmText: 'Log Out',
+    type: 'danger',
+    onConfirm: () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  });
 };
 
 // ─── Init ─────────────────────────────────────────────────────
