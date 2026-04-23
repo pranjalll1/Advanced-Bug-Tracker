@@ -383,8 +383,77 @@ const getManagerDashboard = async (req, res) => {
   }
 };
 
+// ─── TESTER DASHBOARD ─────────────────────────────────────────
+// GET /api/dashboard/tester
+// Personal overview for the logged in tester
+const getTesterDashboard = async (req, res) => {
+  try {
+    const myId = req.user._id;
+
+    // ── My Bug Stats ─────────────────────────────────────────
+    const myTotalBugs      = await Bug.countDocuments({ reportedBy: myId });
+    const myOpenBugs       = await Bug.countDocuments({ reportedBy: myId, status: 'open'        });
+    const myInProgressBugs = await Bug.countDocuments({ reportedBy: myId, status: 'in-progress' });
+    const myResolvedBugs   = await Bug.countDocuments({ reportedBy: myId, status: 'resolved'    });
+    const myReopenedBugs   = await Bug.countDocuments({ reportedBy: myId, status: 'reopened'    });
+
+    // ── My Task Stats ─────────────────────────────────────────
+    const myTotalTasks      = await Task.countDocuments({ assignedTo: myId });
+    const myTodoTasks       = await Task.countDocuments({ assignedTo: myId, status: 'todo'        });
+    const myInProgressTasks = await Task.countDocuments({ assignedTo: myId, status: 'in-progress' });
+    const myInReviewTasks   = await Task.countDocuments({ assignedTo: myId, status: 'in-review'   });
+    const myDoneTasks       = await Task.countDocuments({ assignedTo: myId, status: 'done'        });
+
+    // ── My Recent Activity ────────────────────────────────────
+    const myRecentBugs = await Bug.find({ reportedBy: myId })
+      .populate('assignedTo', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('title status severity priority dueDate createdAt');
+
+    const myRecentTasks = await Task.find({ assignedTo: myId })
+      .populate('createdBy', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('title status priority progress dueDate createdAt');
+
+    res.status(200).json({
+      success: true,
+      dashboard: {
+        bugs: {
+          total:      myTotalBugs,
+          byStatus: {
+            open:       myOpenBugs,
+            inProgress: myInProgressBugs,
+            resolved:   myResolvedBugs,
+            reopened:   myReopenedBugs,
+          },
+        },
+        tasks: {
+          total:   myTotalTasks,
+          byStatus: {
+            todo:       myTodoTasks,
+            inProgress: myInProgressTasks,
+            inReview:   myInReviewTasks,
+            done:       myDoneTasks,
+          },
+        },
+        recentActivity: {
+          bugs:  myRecentBugs,
+          tasks: myRecentTasks,
+        },
+      },
+    });
+
+  } catch (error) {
+    console.error('Tester Dashboard Error:', error);
+    res.status(500).json({ success: false, message: 'Server error.' });
+  }
+};
+
 module.exports = {
   getAdminDashboard,
   getDeveloperDashboard,
   getManagerDashboard,
+  getTesterDashboard,
 };

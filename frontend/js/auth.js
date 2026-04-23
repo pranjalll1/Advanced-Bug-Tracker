@@ -52,7 +52,7 @@ if (loginForm) {
       // Step 8: Check if login was successful
       if (response.ok) {
 
-        // ✅ Save token and user info to localStorage
+        //  Save token and user info to localStorage
         localStorage.setItem("token", data.token);
 
         // Save user info if your backend sends it
@@ -61,7 +61,7 @@ if (loginForm) {
           localStorage.setItem("user", JSON.stringify(data.user));
         }
 
-        // ✅ Redirect to dashboard
+        // Redirect to dashboard
         window.location.href = "dashboard.html";
 
       } else {

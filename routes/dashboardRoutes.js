@@ -5,6 +5,7 @@ const {
   getAdminDashboard,
   getDeveloperDashboard,
   getManagerDashboard,
+  getTesterDashboard,
 } = require('../controllers/dashboardController');
 
 const { protect }   = require('../middleware/authMiddleware');
@@ -34,6 +35,14 @@ router.get('/manager',
   protect,
   authorize('manager'),
   getManagerDashboard
+);
+
+// GET /api/dashboard/tester
+// Personal stats — tester only
+router.get('/tester',
+  protect,
+  authorize('tester'),
+  getTesterDashboard
 );
 
 module.exports = router;
