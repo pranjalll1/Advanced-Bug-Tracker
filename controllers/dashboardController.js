@@ -391,18 +391,18 @@ const getTesterDashboard = async (req, res) => {
     const myId = req.user._id;
 
     // ── My Bug Stats ─────────────────────────────────────────
-    const myTotalBugs      = await Bug.countDocuments({ reportedBy: myId });
-    const myOpenBugs       = await Bug.countDocuments({ reportedBy: myId, status: 'open'        });
-    const myInProgressBugs = await Bug.countDocuments({ reportedBy: myId, status: 'in-progress' });
-    const myResolvedBugs   = await Bug.countDocuments({ reportedBy: myId, status: 'resolved'    });
-    const myReopenedBugs   = await Bug.countDocuments({ reportedBy: myId, status: 'reopened'    });
+    const myTotalBugs      = await Bug.countDocuments({ });
+    const myOpenBugs       = await Bug.countDocuments({ status: 'open'        });
+    const myInProgressBugs = await Bug.countDocuments({ status: 'in-progress' });
+    const myResolvedBugs   = await Bug.countDocuments({ status: 'resolved'    });
+    const myReopenedBugs   = await Bug.countDocuments({  status: 'reopened'    });
 
     // ── My Task Stats ─────────────────────────────────────────
-    const myTotalTasks      = await Task.countDocuments({ assignedTo: myId });
-    const myTodoTasks       = await Task.countDocuments({ assignedTo: myId, status: 'todo'        });
-    const myInProgressTasks = await Task.countDocuments({ assignedTo: myId, status: 'in-progress' });
-    const myInReviewTasks   = await Task.countDocuments({ assignedTo: myId, status: 'in-review'   });
-    const myDoneTasks       = await Task.countDocuments({ assignedTo: myId, status: 'done'        });
+    const myTotalTasks      = await Task.countDocuments({ });
+    const myTodoTasks       = await Task.countDocuments({  status: 'todo'        });
+    const myInProgressTasks = await Task.countDocuments({  status: 'in-progress' });
+    const myInReviewTasks   = await Task.countDocuments({  status: 'in-review'   });
+    const myDoneTasks       = await Task.countDocuments({  status: 'done'        });
 
     // ── My Recent Activity ────────────────────────────────────
     const myRecentBugs = await Bug.find({ reportedBy: myId })
