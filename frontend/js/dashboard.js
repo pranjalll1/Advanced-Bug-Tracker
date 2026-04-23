@@ -79,7 +79,7 @@ const loadDashboard = async () => {
     if (user?.role === 'admin') endpoint = '/dashboard/admin';
     if (user?.role === 'developer') endpoint = '/dashboard/developer';
     if (user?.role === 'manager') endpoint = '/dashboard/manager';
-    if (user?.role === 'tester') endpoint = '/dashboard/admin';
+    if (user?.role === 'tester') endpoint = '/dashboard/manager';
 
     const response = await fetch(
       `/api${endpoint}`, {
