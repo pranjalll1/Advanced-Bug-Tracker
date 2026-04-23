@@ -82,7 +82,7 @@ const loadDashboard = async () => {
     if (user?.role === 'tester') endpoint = '/api/dashboard/admin';
 
     const response = await fetch(
-      `http://localhost:8000${endpoint}`, {
+      `/api${endpoint}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',

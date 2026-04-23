@@ -32,7 +32,7 @@ const setupAvatars = () => {
   const settingsAvatarInitial = document.getElementById('avatar-initial');
   
   if (user?.avatar) {
-    const avatarUrl = `http://localhost:8000${user.avatar}`;
+    const avatarUrl = `/api${user.avatar}`;
     
     // Sidebar
     if (sidebarAvatar) {

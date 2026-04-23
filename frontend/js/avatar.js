@@ -5,7 +5,7 @@ const setupAvatars = () => {
   if (!user) return;
 
   if (user.avatar) {
-    const avatarUrl = `http://localhost:8000${user.avatar}`;
+    const avatarUrl = `/api${user.avatar}`;
     if (sidebarAvatar) {
       sidebarAvatar.innerHTML = `<img src="${avatarUrl}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
     }
