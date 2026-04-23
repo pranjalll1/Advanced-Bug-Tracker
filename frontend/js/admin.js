@@ -43,7 +43,7 @@ const switchTab = (tab) => {
 const loadPendingUsers = async () => {
   try {
     const response = await fetch(
-      'http://localhost:8000/api/admin/users/pending', {
+      '/api/admin/users/pending', {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
@@ -125,7 +125,7 @@ const approveUser = (userId, userName) => {
     onConfirm: async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/admin/users/${userId}/approve`, {
+          `/api/admin/users/${userId}/approve`, {
           method:  'PATCH',
           headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -165,7 +165,7 @@ const rejectUser = (userId, userName) => {
     onConfirm: async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/admin/users/${userId}/reject`, {
+          `/api/admin/users/${userId}/reject`, {
           method:  'PATCH',
           headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -200,7 +200,7 @@ const loadAllUsers = async () => {
     const role   = document.getElementById('filter-role').value;
     const status = document.getElementById('filter-status').value;
 
-    let url = 'http://localhost:8000/api/admin/users?';
+    let url = '/api/admin/users?';
     if (role)   url += `role=${role}&`;
     if (status) url += `status=${status}`;
 
@@ -315,7 +315,7 @@ const submitRoleChange = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/admin/users/${selectedUserId}/role`, {
+      `/api/admin/users/${selectedUserId}/role`, {
       method:  'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -352,7 +352,7 @@ const deleteUser = (userId, userName) => {
     onConfirm: async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/admin/users/${userId}`, {
+          `/api/admin/users/${userId}`, {
           method:  'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         });

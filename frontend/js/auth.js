@@ -4,7 +4,7 @@
 
 // 🔧 CONFIGURATION
 // Change this if your backend runs on a different port
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "/api";
 
 
 // =============================================
@@ -65,13 +65,13 @@ if (loginForm) {
         window.location.href = "dashboard.html";
 
       } else {
-        // ❌ Backend returned an error (wrong password, user not found, etc.)
+        //  Backend returned an error (wrong password, user not found, etc.)
         const backendError = data.message || data.error || "Login failed. Please check your credentials.";
         showError(errorMsg, backendError);
       }
 
     } catch (err) {
-      // ❌ Network error (backend not running, wrong port, etc.)
+      //  Network error (backend not running, wrong port, etc.)
       showError(errorMsg, "Cannot connect to server. Is your backend running?");
       console.error("Login error:", err);
     }
@@ -145,7 +145,7 @@ if (registerForm) {
 
       if (response.ok) {
 
-        // ✅ Success — show message, redirect to login after 3 seconds
+        //  Success — show message, redirect to login after 3 seconds
         showSuccess(
           successMsg,
           "Account created! ⏳ Waiting for admin approval. Redirecting to login..."
@@ -162,7 +162,7 @@ if (registerForm) {
         }, 3000);
 
       } else {
-        // ❌ Backend error — show exact message from your controller
+        //  Backend error — show exact message from your controller
         const backendError = data.message || data.error || "Registration failed. Please try again.";
         showError(errorMsg, backendError);
       }

@@ -18,7 +18,7 @@ if (!bugId) {
 const loadBugDetail = async () => {
   try {
     const response = await fetch(
-      `http://localhost:8000/api/bugs/${bugId}`, {
+      `/api/bugs/${bugId}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
@@ -26,7 +26,7 @@ const loadBugDetail = async () => {
 
     if (!data.success) {
       document.getElementById('loading').textContent
-        = '❌ Bug not found.';
+        = ' Bug not found.';
       return;
     }
 
@@ -118,7 +118,7 @@ const updateStatus = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/bugs/${bugId}/status`, {
+      `/api/bugs/${bugId}/status`, {
       method:  'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -148,7 +148,7 @@ const updateStatus = async () => {
 const loadDevelopers = async () => {
   try {
     const response = await fetch(
-      'http://localhost:8000/api/admin/users?role=developer&status=active', {
+      '/api/admin/users?role=developer&status=active', {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
@@ -180,7 +180,7 @@ const assignBug = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/bugs/${bugId}/assign`, {
+      `/api/bugs/${bugId}/assign`, {
       method:  'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -209,7 +209,7 @@ const assignBug = async () => {
 const loadComments = async () => {
   try {
     const response = await fetch(
-      `http://localhost:8000/api/comments/Bug/${bugId}`, {
+      `/api/comments/Bug/${bugId}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
@@ -293,7 +293,7 @@ const addComment = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/api/comments', {
+    const response = await fetch('/api/comments', {
       method:  'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -331,7 +331,7 @@ const deleteComment = (commentId) => {
     onConfirm: async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/comments/${commentId}`, {
+          `/api/comments/${commentId}`, {
           method:  'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         });

@@ -90,7 +90,7 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
   btn.disabled = true;
   
   try {
-    const response = await fetch('http://localhost:8000/api/users/profile', {
+    const response = await fetch('/api/users/profile', {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -142,7 +142,7 @@ document.getElementById('password-form').addEventListener('submit', async (e) =>
   btn.disabled = true;
   
   try {
-    const response = await fetch('http://localhost:8000/api/users/password', {
+    const response = await fetch('/api/users/password', {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -216,7 +216,7 @@ document.getElementById('avatar-form').addEventListener('submit', async (e) => {
   formData.append('avatar', file);
   
   try {
-    const response = await fetch('http://localhost:8000/api/users/avatar', {
+    const response = await fetch('/api/users/avatar', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`

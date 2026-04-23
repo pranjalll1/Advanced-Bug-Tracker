@@ -38,7 +38,7 @@ const loadTasks = async (page = 1) => {
     const priority = document.getElementById('filter-priority').value;
     const search   = document.getElementById('filter-search').value;
 
-    let url = `http://localhost:8000/api/tasks?page=${page}&limit=10`;
+    let url = `/api/tasks?page=${page}&limit=10`;
     if (status)   url += `&status=${status}`;
     if (priority) url += `&priority=${priority}`;
     if (search)   url += `&search=${encodeURIComponent(search)}`;
@@ -176,7 +176,7 @@ const createTask = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/api/tasks', {
+    const response = await fetch('/api/tasks', {
       method:  'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -219,7 +219,7 @@ const deleteTask = (taskId) => {
     onConfirm: async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/tasks/${taskId}`, {
+          `/api/tasks/${taskId}`, {
           method:  'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -250,7 +250,7 @@ const submitStatusUpdate = async () => {
   try {
     // Update status
     const statusRes = await fetch(
-      `http://localhost:8000/api/tasks/${selectedTaskId}/status`, {
+      `/api/tasks/${selectedTaskId}/status`, {
       method:  'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -272,7 +272,7 @@ const submitStatusUpdate = async () => {
     // Update progress if provided
     if (progress !== '') {
       await fetch(
-        `http://localhost:8000/api/tasks/${selectedTaskId}`, {
+        `/api/tasks/${selectedTaskId}`, {
         method:  'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

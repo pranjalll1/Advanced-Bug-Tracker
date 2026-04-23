@@ -47,7 +47,7 @@ const loadBugs = async (page = 1) => {
     const priority = document.getElementById('filter-priority').value;
     const search = document.getElementById('filter-search').value;
 
-    let url = `http://localhost:8000/api/bugs?page=${page}&limit=10`;
+    let url = `/api/bugs?page=${page}&limit=10`;
     if (status) url += `&status=${status}`;
     if (severity) url += `&severity=${severity}`;
     if (priority) url += `&priority=${priority}`;
@@ -183,7 +183,7 @@ const createBug = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/api/bugs', {
+    const response = await fetch('/api/bugs', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -226,7 +226,7 @@ const deleteBug = (bugId) => {
     onConfirm: async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/bugs/${bugId}`, {
+          `/api/bugs/${bugId}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         });
