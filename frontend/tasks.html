@@ -203,42 +203,61 @@
   </div>
 
   <!-- ─── Update Status Modal ──────────────────────────────── -->
-  <div id="status-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>🔄 Update Task Status</h2>
-        <span onclick="closeStatusModal()" class="close-btn">✕</span>
+  <!-- ─── Update Status Modal ──────────────────────────────── -->
+<div id="status-modal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🔄 Update Task</h2>
+      <span onclick="closeStatusModal()" class="close-btn">✕</span>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Status -->
+      <div class="form-group">
+        <label>Status</label>
+        <select id="new-status">
+          <option value="todo">Todo</option>
+          <option value="in-progress">In Progress</option>
+          <option value="in-review">In Review</option>
+          <option value="done">Done</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
       </div>
 
-      <div class="modal-body">
-        <div class="form-group">
-          <label>New Status</label>
-          <select id="new-status">
-            <option value="todo">Todo</option>
-            <option value="in-progress">In Progress</option>
-            <option value="in-review">In Review</option>
-            <option value="done">Done</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Progress % (0–100)</label>
-          <input type="number" id="new-progress"
-            min="0" max="100" placeholder="e.g. 50" />
-        </div>
-
-        <div id="status-error" class="error-msg hidden"></div>
+      <!-- Progress -->
+      <div class="form-group">
+        <label>Progress % (0–100)</label>
+        <input
+          type="number"
+          id="new-progress"
+          min="0"
+          max="100"
+          placeholder="e.g. 50"
+        />
       </div>
 
-      <div class="modal-footer">
-        <button onclick="closeStatusModal()"
-          class="btn-secondary">Cancel</button>
-        <button onclick="submitStatusUpdate()"
-          class="btn-primary">Update</button>
+      <!-- Assign to Developer (admin and manager only) -->
+      <div class="form-group" id="assign-task-section">
+        <label>Assign To</label>
+        <select id="assign-task-user">
+          <option value="">Loading users...</option>
+        </select>
       </div>
+
+      <div id="status-error" class="error-msg hidden"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button onclick="closeStatusModal()"
+        class="btn-secondary">Cancel</button>
+      <button onclick="submitStatusUpdate()"
+        class="btn-primary">Update Task</button>
     </div>
   </div>
+</div>
+
+   
 
   <!-- Overlay -->
   <div id="modal-overlay" class="overlay hidden"

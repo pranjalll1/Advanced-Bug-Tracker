@@ -56,7 +56,7 @@ const getAdminDashboard = async (req, res) => {
     // Unassigned bugs (need attention)
     const unassignedBugs = await Bug.countDocuments({ assignedTo: null });
 
-    // ── Task Stats ───────────────────────────────────────────
+    // // ── Task Stats ───────────────────────────────────────────
     const totalTasks      = await Task.countDocuments();
     const todoTasks       = await Task.countDocuments({ status: 'todo'        });
     const inProgressTasks = await Task.countDocuments({ status: 'in-progress' });

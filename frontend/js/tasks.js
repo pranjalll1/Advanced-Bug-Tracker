@@ -5,31 +5,19 @@ const user  = JSON.parse(localStorage.getItem('user'));
 if (!token) window.location.href = 'login.html';
 
 // Show username in navbar
-document.getElementById('user-name').textContent = user?.name ?? '';
-
-
-// Role badge
-const roleBadge = document.getElementById('user-role-badge');
-if (roleBadge) {
-  const capitalize = (str) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-  roleBadge.textContent = capitalize(user?.role ?? '');
-  roleBadge.className = `user-role role-${user?.role}`;
-}
+document.getElementById('user-name').textContent
+  = user?.name ?? '';
 
 // ─── Hide Create Button for non-managers/admins ───────────────
-// Only admin and manager can create tasks
 if (user?.role !== 'admin' && user?.role !== 'manager') {
   const btn = document.getElementById('create-task-btn');
   if (btn) btn.style.display = 'none';
 }
 
 // ─── State ────────────────────────────────────────────────────
-let currentPage      = 1;
-let totalPages       = 1;
-let selectedTaskId   = null;
+let currentPage    = 1;
+let totalPages     = 1;
+let selectedTaskId = null;
 
 // ─── Load Tasks ───────────────────────────────────────────────
 const loadTasks = async (page = 1) => {
@@ -38,7 +26,7 @@ const loadTasks = async (page = 1) => {
     const priority = document.getElementById('filter-priority').value;
     const search   = document.getElementById('filter-search').value;
 
-    let url = `/api/tasks?page=${page}&limit=10`;
+    let url = `http://localhost:8000/api/tasks?page=${page}&limit=10`;
     if (status)   url += `&status=${status}`;
     if (priority) url += `&priority=${priority}`;
     if (search)   url += `&search=${encodeURIComponent(search)}`;
@@ -53,7 +41,6 @@ const loadTasks = async (page = 1) => {
       },
     });
 
-    // Token expired
     if (response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -81,7 +68,7 @@ const loadTasks = async (page = 1) => {
   }
 };
 
-// ─── Render Tasks into Table ──────────────────────────────────
+// ─── Render Tasks ─────────────────────────────────────────────
 const renderTasks = (tasks) => {
   const tbody = document.getElementById('task-table-body');
 
@@ -90,9 +77,7 @@ const renderTasks = (tasks) => {
       <tr>
         <td colspan="8" class="loading-text">
           No tasks found.
-          ${canCreate()
-            ? 'Click "+ Create Task" to add one!'
-            : ''}
+          ${canCreate() ? 'Click "+ Create Task" to add one!' : ''}
         </td>
       </tr>`;
     return;
@@ -119,7 +104,7 @@ const renderTasks = (tasks) => {
       <td>
         <div class="progress-bar-wrapper">
           <div class="progress-bar"
-            style="width: ${task.progress ?? 0}%">
+            style="width:${task.progress ?? 0}%">
           </div>
           <span class="progress-label">
             ${task.progress ?? 0}%
@@ -132,10 +117,9 @@ const renderTasks = (tasks) => {
       </td>
       <td>${task.createdBy?.name ?? 'Unknown'}</td>
       <td>${formatDate(task.dueDate)}</td>
-      <td>
-        <div class="action-btns">
+      <td class="action-btns">
         <button
-          onclick="openStatusModal('${task._id}', '${task.status}', ${task.progress ?? 0})"
+          onclick="openStatusModal('${task._id}', '${task.status}', ${task.progress ?? 0}, '${task.assignedTo?._id ?? ''}')"
           class="btn-small btn-view">
           Update
         </button>
@@ -146,10 +130,46 @@ const renderTasks = (tasks) => {
                Delete
              </button>`
           : ''}
-        </div>
       </td>
     </tr>
   `).join('');
+};
+
+// ─── Load Users for Assign Dropdown ──────────────────────────
+const loadUsersForAssign = async () => {
+  // Only load for admin and manager
+  if (!canAssign()) {
+    document.getElementById('assign-task-section')
+      .style.display = 'none';
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost:8000/api/admin/users?status=active', {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+
+    const data = await response.json();
+
+    if (!data.success) return;
+
+    const select = document.getElementById('assign-task-user');
+
+    // Clear and rebuild options
+    select.innerHTML = '<option value="">— Keep Current —</option>';
+
+    data.users.forEach(u => {
+      // Show all active users except admin themselves
+      const option       = document.createElement('option');
+      option.value       = u._id;
+      option.textContent = `${u.name} (${capitalize(u.role)})`;
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error('Load users error:', error);
+  }
 };
 
 // ─── Create Task ──────────────────────────────────────────────
@@ -161,7 +181,6 @@ const createTask = async () => {
   const project     = document.getElementById('task-project').value.trim();
   const hours       = document.getElementById('task-hours').value;
 
-  // Validate
   if (!title || !description) {
     showCreateError('Title and description are required.');
     return;
@@ -176,7 +195,7 @@ const createTask = async () => {
   }
 
   try {
-    const response = await fetch('/api/tasks', {
+    const response = await fetch('http://localhost:8000/api/tasks', {
       method:  'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -193,7 +212,6 @@ const createTask = async () => {
     });
 
     const data = await response.json();
-    console.log('✅ Create task response:', data);
 
     if (!data.success) {
       showCreateError(data.message);
@@ -204,53 +222,48 @@ const createTask = async () => {
     loadTasks(currentPage);
 
   } catch (error) {
-    console.error('Create task error:', error);
     showCreateError('Server error. Please try again.');
   }
 };
 
 // ─── Delete Task ──────────────────────────────────────────────
-const deleteTask = (taskId) => {
-  showConfirm({
-    title: 'Delete Task',
-    message: 'Are you sure you want to delete this task? This action cannot be undone.',
-    confirmText: 'Delete',
-    type: 'danger',
-    onConfirm: async () => {
-      try {
-        const response = await fetch(
-          `/api/tasks/${taskId}`, {
-          method:  'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` },
-        });
+const deleteTask = async (taskId) => {
+  if (!confirm('Are you sure you want to delete this task?')) return;
 
-        const data = await response.json();
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/tasks/${taskId}`, {
+      method:  'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
 
-        if (data.success) {
-          showToast('Task deleted successfully', 'success');
-          loadTasks(currentPage);
-        } else {
-          showAlert(data.message, 'danger');
-        }
+    const data = await response.json();
 
-      } catch (error) {
-        showAlert('Failed to delete task.', 'danger');
-      }
+    if (data.success) {
+      loadTasks(currentPage);
+    } else {
+      alert(data.message);
     }
-  });
+
+  } catch (error) {
+    alert('Failed to delete task.');
+  }
 };
 
-// ─── Update Status ────────────────────────────────────────────
+// ─── Submit Status + Assign Update ────────────────────────────
 const submitStatusUpdate = async () => {
-  const status   = document.getElementById('new-status').value;
-  const progress = document.getElementById('new-progress').value;
+  const status     = document.getElementById('new-status').value;
+  const progress   = document.getElementById('new-progress').value;
+  const assignedTo = canAssign()
+    ? document.getElementById('assign-task-user').value
+    : '';
 
   if (!selectedTaskId) return;
 
   try {
-    // Update status
+    // ── 1. Update Status ──────────────────────────────────
     const statusRes = await fetch(
-      `/api/tasks/${selectedTaskId}/status`, {
+      `http://localhost:8000/api/tasks/${selectedTaskId}/status`, {
       method:  'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -262,17 +275,16 @@ const submitStatusUpdate = async () => {
     const statusData = await statusRes.json();
 
     if (!statusData.success) {
-      document.getElementById('status-error').textContent
-        = statusData.message;
-      document.getElementById('status-error')
-        .classList.remove('hidden');
+      const errEl = document.getElementById('status-error');
+      errEl.textContent = statusData.message;
+      errEl.classList.remove('hidden');
       return;
     }
 
-    // Update progress if provided
+    // ── 2. Update Progress ────────────────────────────────
     if (progress !== '') {
       await fetch(
-        `/api/tasks/${selectedTaskId}`, {
+        `http://localhost:8000/api/tasks/${selectedTaskId}`, {
         method:  'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -282,11 +294,29 @@ const submitStatusUpdate = async () => {
       });
     }
 
+    // ── 3. Assign to User (if selected) ───────────────────
+    if (assignedTo && canAssign()) {
+      const assignRes = await fetch(
+        `http://localhost:8000/api/tasks/${selectedTaskId}/assign`, {
+        method:  'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        },
+        body: JSON.stringify({ userId: assignedTo }),
+      });
+
+      const assignData = await assignRes.json();
+      if (!assignData.success) {
+        alert(`Assign failed: ${assignData.message}`);
+      }
+    }
+
     closeStatusModal();
     loadTasks(currentPage);
 
   } catch (error) {
-    console.error('Update status error:', error);
+    console.error('Update error:', error);
   }
 };
 
@@ -334,16 +364,31 @@ const closeCreateModal = () => {
   document.getElementById('task-due-date').value    = '';
 };
 
-const openStatusModal = (taskId, currentStatus, currentProgress) => {
+const openStatusModal = async (
+  taskId, currentStatus, currentProgress, currentAssignee
+) => {
   selectedTaskId = taskId;
+
+  // Set current values
   document.getElementById('new-status').value   = currentStatus;
   document.getElementById('new-progress').value = currentProgress;
   document.getElementById('status-error')
     .classList.add('hidden');
+
+  // Show modal first
   document.getElementById('status-modal')
     .classList.remove('hidden');
   document.getElementById('modal-overlay')
     .classList.remove('hidden');
+
+  // Load users for assign dropdown
+  await loadUsersForAssign();
+
+  // Set current assignee in dropdown if exists
+  if (currentAssignee && canAssign()) {
+    const select = document.getElementById('assign-task-user');
+    if (select) select.value = currentAssignee;
+  }
 };
 
 const closeStatusModal = () => {
@@ -366,7 +411,7 @@ const capitalize = (str) => {
 };
 
 const formatDate = (dateStr) => {
-  if (!dateStr) return '-';
+  if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-IN', {
     day:   '2-digit',
     month: 'short',
@@ -374,10 +419,13 @@ const formatDate = (dateStr) => {
   });
 };
 
-const canCreate = () =>
+const canCreate  = () =>
   user?.role === 'admin' || user?.role === 'manager';
 
-const canDelete = () =>
+const canDelete  = () =>
+  user?.role === 'admin' || user?.role === 'manager';
+
+const canAssign  = () =>
   user?.role === 'admin' || user?.role === 'manager';
 
 const showTableMessage = (msg) => {
@@ -392,17 +440,9 @@ const showCreateError = (msg) => {
 };
 
 const logout = () => {
-  showConfirm({
-    title: 'Log Out',
-    message: 'Are you sure you want to log out?',
-    confirmText: 'Log Out',
-    type: 'danger',
-    onConfirm: () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    }
-  });
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = 'login.html';
 };
 
 // ─── Init ─────────────────────────────────────────────────────
