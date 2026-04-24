@@ -24,7 +24,7 @@ const { authorize }  = require('../middleware/roleMiddleware');
 router.get('/users/pending',        protect, authorize('admin'), getPendingUsers);
 
 // GET  /api/admin/users            → Get all users (with optional filters)
-router.get('/users',                protect, authorize('admin'), getAllUsers);
+router.get('/users',                protect, authorize('admin','manager'), getAllUsers);
 
 // PATCH /api/admin/users/:id/approve → Approve a user
 router.patch('/users/:id/approve',  protect, authorize('admin'), approveUser);

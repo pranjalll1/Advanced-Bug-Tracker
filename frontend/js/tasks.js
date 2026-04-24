@@ -137,30 +137,40 @@ const renderTasks = (tasks) => {
 
 // ─── Load Users for Assign Dropdown ──────────────────────────
 const loadUsersForAssign = async () => {
-  // Only load for admin and manager
   if (!canAssign()) {
-    document.getElementById('assign-task-section')
-      .style.display = 'none';
+    const section = document.getElementById('assign-task-section');
+    if (section) section.style.display = 'none';
     return;
   }
 
+  const select = document.getElementById('assign-task-user');
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Loading...</option>';
+
   try {
     const response = await fetch(
-      'https://advanced-bug-tracker.onrender.com/api/admin/users?status=active', {
+      'https://advanced-bug-tracker.onrender.com/api/admin/users?status=active&role=developer', {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
+    console.log('👥 Status:', response.status); // debug
+
     const data = await response.json();
+    console.log('👥 Users:', data);             // debug
 
-    if (!data.success) return;
+    if (!data.success) {
+      select.innerHTML = '<option value="">No users found</option>';
+      return;
+    }
 
-    const select = document.getElementById('assign-task-user');
+    if (data.users.length === 0) {
+      select.innerHTML = '<option value="">No developers available</option>';
+      return;
+    }
 
-    // Clear and rebuild options
-    select.innerHTML = '<option value="">— Keep Current —</option>';
-
+    select.innerHTML = '<option value="">— Select User —</option>';
     data.users.forEach(u => {
-      // Show all active users except admin themselves
       const option       = document.createElement('option');
       option.value       = u._id;
       option.textContent = `${u.name} (${capitalize(u.role)})`;
@@ -169,6 +179,7 @@ const loadUsersForAssign = async () => {
 
   } catch (error) {
     console.error('Load users error:', error);
+    select.innerHTML = '<option value="">Error loading</option>';
   }
 };
 
