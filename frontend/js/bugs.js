@@ -200,7 +200,7 @@ const createBug = async () => {
     });
 
     const data = await response.json();
-    console.log('✅ Create bug response:', data);
+    console.log('Create bug response:', data);
 
     if (!data.success) {
       showCreateError(data.message);

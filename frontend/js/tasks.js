@@ -26,7 +26,7 @@ const loadTasks = async (page = 1) => {
     const priority = document.getElementById('filter-priority').value;
     const search   = document.getElementById('filter-search').value;
 
-    let url = `http://localhost:8000/api/tasks?page=${page}&limit=10`;
+    let url = `https://advanced-bug-tracker.onrender.com/api/tasks?page=${page}&limit=10`;
     if (status)   url += `&status=${status}`;
     if (priority) url += `&priority=${priority}`;
     if (search)   url += `&search=${encodeURIComponent(search)}`;
@@ -52,7 +52,7 @@ const loadTasks = async (page = 1) => {
     console.log('📦 Tasks response:', data);
 
     if (!data.success) {
-      showTableMessage(`❌ Error: ${data.message}`);
+      showTableMessage(` Error: ${data.message}`);
       return;
     }
 
@@ -146,7 +146,7 @@ const loadUsersForAssign = async () => {
 
   try {
     const response = await fetch(
-      'http://localhost:8000/api/admin/users?status=active', {
+      'https://advanced-bug-tracker.onrender.com/api/admin/users?status=active', {
       headers: { 'Authorization': `Bearer ${token}` },
     });
 
@@ -195,7 +195,7 @@ const createTask = async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:8000/api/tasks', {
+    const response = await fetch('https://advanced-bug-tracker.onrender.com/api/tasks', {
       method:  'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -232,7 +232,7 @@ const deleteTask = async (taskId) => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/tasks/${taskId}`, {
+      `https://advanced-bug-tracker.onrender.com/api/tasks/${taskId}`, {
       method:  'DELETE',
       headers: { 'Authorization': `Bearer ${token}` },
     });
@@ -263,7 +263,7 @@ const submitStatusUpdate = async () => {
   try {
     // ── 1. Update Status ──────────────────────────────────
     const statusRes = await fetch(
-      `http://localhost:8000/api/tasks/${selectedTaskId}/status`, {
+      `https://advanced-bug-tracker.onrender.com/api/tasks/${selectedTaskId}/status`, {
       method:  'PATCH',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -284,7 +284,7 @@ const submitStatusUpdate = async () => {
     // ── 2. Update Progress ────────────────────────────────
     if (progress !== '') {
       await fetch(
-        `http://localhost:8000/api/tasks/${selectedTaskId}`, {
+        `https://advanced-bug-tracker.onrender.com/api/tasks/${selectedTaskId}`, {
         method:  'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -297,7 +297,7 @@ const submitStatusUpdate = async () => {
     // ── 3. Assign to User (if selected) ───────────────────
     if (assignedTo && canAssign()) {
       const assignRes = await fetch(
-        `http://localhost:8000/api/tasks/${selectedTaskId}/assign`, {
+        `https://advanced-bug-tracker.onrender.com/api/tasks/${selectedTaskId}/assign`, {
         method:  'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

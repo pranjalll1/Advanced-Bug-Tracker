@@ -1,24 +1,19 @@
 // ─── Auth Check ───────────────────────────────────────────────
 const token = localStorage.getItem('token');
-const user = JSON.parse(localStorage.getItem('user'));
-// Hide "Report Bug" option for everyone except testers
-if (user && user.role !== 'tester') {
-
-  // Target the "+ Report Bug" button in bugs.html
-  const bugsPageBtn = document.getElementById('report-bug-btn');
-  if (bugsPageBtn) {
-    bugsPageBtn.style.display = 'none';
-  }
-
-  // Target the "Report Bug" button in the dashboard.html banner
-  const dashboardBtn = document.querySelector('.banner-actions');
-  if (dashboardBtn) {
-    dashboardBtn.style.display = 'none';
-  }
-}
-
+const user  = JSON.parse(localStorage.getItem('user'));
 
 if (!token) window.location.href = 'login.html';
+
+// ─── Base API URL ─────────────────────────────────────────────
+const API = 'https://advanced-bug-tracker.onrender.com';
+
+// ─── Hide "Report Bug" for non-testers ───────────────────────
+if (user && user.role !== 'tester') {
+  const bugsPageBtn  = document.getElementById('report-bug-btn');
+  const dashboardBtn = document.querySelector('.banner-actions');
+  if (bugsPageBtn)  bugsPageBtn.style.display  = 'none';
+  if (dashboardBtn) dashboardBtn.style.display = 'none';
+}
 
 // ─── Helpers ──────────────────────────────────────────────────
 const setText = (id, value) => {
@@ -33,11 +28,11 @@ const capitalize = (str) => {
 
 const logout = () => {
   showConfirm({
-    title: 'Log Out',
-    message: 'Are you sure you want to log out?',
+    title:       'Log Out',
+    message:     'Are you sure you want to log out?',
     confirmText: 'Log Out',
-    type: 'danger',
-    onConfirm: () => {
+    type:        'danger',
+    onConfirm:   () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = 'login.html';
@@ -45,50 +40,69 @@ const logout = () => {
   });
 };
 
-// ─── Setup UI based on role ───────────────────────────────────
-document.getElementById('user-name').textContent = user?.name ?? 'User';
-
+// ─── Setup UI Based on Role ───────────────────────────────────
+document.getElementById('user-name').textContent
+  = user?.name ?? 'User';
 
 // Role badge
 const roleBadge = document.getElementById('user-role-badge');
 if (roleBadge) {
   roleBadge.textContent = capitalize(user?.role ?? '');
-  roleBadge.className = `user-role role-${user?.role}`;
+  roleBadge.className   = `user-role role-${user?.role}`;
 }
 
 // Welcome text
 const welcomeText = document.getElementById('welcome-text');
-const welcomeSub = document.getElementById('welcome-sub');
-if (welcomeText) welcomeText.textContent = `Welcome back, ${user?.name?.split(' ')[0]}!`;
-if (welcomeSub) welcomeSub.textContent = `You are logged in as ${capitalize(user?.role)}`;
+const welcomeSub  = document.getElementById('welcome-sub');
+if (welcomeText) {
+  welcomeText.textContent
+    = `Welcome back, ${user?.name?.split(' ')[0]}!`;
+}
+if (welcomeSub) {
+  welcomeSub.textContent
+    = `You are logged in as ${capitalize(user?.role)}`;
+}
 
-// Show admin link in navbar if admin
+// Show admin link if admin
 if (user?.role === 'admin') {
   const adminLink = document.getElementById('admin-link');
   if (adminLink) adminLink.style.display = 'flex';
 
-  const pendingUsersCard = document.getElementById('pending-users-card');
-  if (pendingUsersCard) pendingUsersCard.style.display = 'flex';
+  const pendingCard = document.getElementById('pending-users-card');
+  if (pendingCard) pendingCard.style.display = 'flex';
 }
 
 // ─── Load Dashboard Data ──────────────────────────────────────
 const loadDashboard = async () => {
   try {
-    // Pick endpoint based on role
-    let endpoint = '';
-    if (user?.role === 'admin') endpoint = '/dashboard/admin';
-    if (user?.role === 'developer') endpoint = '/dashboard/developer';
-    if (user?.role === 'manager') endpoint = '/dashboard/manager';
-    if (user?.role === 'tester') endpoint = '/dashboard/tester';
+    // Show loading dots on all stat cards
+    ['total-bugs', 'resolved-bugs', 'pending-bugs',
+     'total-tasks', 'todo-tasks', 'done-tasks',
+     'pending-users'].forEach(id => setText(id, '...'));
 
-    const response = await fetch(
-      `/api${endpoint}`, {
+    // ── Pick correct endpoint per role ────────────────────
+    let endpoint = '';
+    if (user?.role === 'admin')     endpoint = '/api/dashboard/admin';
+    if (user?.role === 'developer') endpoint = '/api/dashboard/developer';
+    if (user?.role === 'manager')   endpoint = '/api/dashboard/manager';
+    if (user?.role === 'tester')    endpoint = '/api/dashboard/tester';
+
+    // Safety check
+    if (!endpoint) {
+      console.error('No endpoint for role:', user?.role);
+      return;
+    }
+
+    console.log('📡 Fetching:', `${API}${endpoint}`);
+
+    const response = await fetch(`${API}${endpoint}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        'Content-Type':  'application/json',
       },
     });
 
+    // Token expired
     if (response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -101,33 +115,32 @@ const loadDashboard = async () => {
 
     if (!data.success) {
       console.error('Dashboard error:', data.message);
+      // Show 0 instead of ...
+      ['total-bugs', 'resolved-bugs', 'pending-bugs',
+       'total-tasks', 'todo-tasks', 'done-tasks'].forEach(
+        id => setText(id, '0')
+      );
       return;
     }
 
-    const bugs = data.dashboard.bugs;
+    const bugs  = data.dashboard.bugs;
     const tasks = data.dashboard.tasks;
 
-    // ── Bug Stats ────────────────────────────────────────
+    // ── Bug Stats ─────────────────────────────────────────
+    const openCount      = bugs?.byStatus?.open       || 0;
+    const inProgressCount= bugs?.byStatus?.inProgress || 0;
+    const pendingBugs    = openCount + inProgressCount;
 
-    // Calculate pending bugs (Open + In Progress)
-    const openCount = bugs?.byStatus?.open || 0;
-    const inProgressCount = bugs?.byStatus?.inProgress || 0;
-    const pendingBugs = openCount + inProgressCount;
+    setText('total-bugs',    bugs?.total              ?? 0);
+    setText('resolved-bugs', bugs?.byStatus?.resolved ?? 0);
+    setText('pending-bugs',  pendingBugs);
 
-    // Map to HTML IDs
-    setText('total-bugs', bugs?.total || 0);
-    setText('resolved-bugs', bugs?.byStatus?.resolved || 0);
-    setText('pending-bugs', pendingBugs);
+    // ── Task Stats ────────────────────────────────────────
+    setText('total-tasks', tasks?.total          ?? 0);
+    setText('todo-tasks',  tasks?.byStatus?.todo ?? 0);
+    setText('done-tasks',  tasks?.byStatus?.done ?? 0);
 
-    // ── Task Stats ───────────────────────────────────────
-
-
-    // ── Task Stats ───────────────────────────────────────
-    setText('total-tasks', tasks?.total ?? 0);
-    setText('todo-tasks', tasks?.byStatus?.todo ?? 0);
-    setText('done-tasks', tasks?.byStatus?.done ?? 0);
-
-    // ── Admin: Pending Users ─────────────────────────────
+    // ── Admin Only ────────────────────────────────────────
     if (user?.role === 'admin') {
       setText('pending-users',
         data.dashboard.users?.pending ?? 0);
@@ -138,8 +151,5 @@ const loadDashboard = async () => {
   }
 };
 
-
 // ─── Init ─────────────────────────────────────────────────────
-setTimeout(() => {
-  loadDashboard();
-}, 1000);
+loadDashboard();
