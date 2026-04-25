@@ -2201,3 +2201,56 @@ body.dark-mode .custom-modal-actions .btn-secondary:hover { background: #16476a;
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 16px rgba(59, 151, 151, 0.35) !important;
 }
+/* ─── Report Bug Button Fix ──────────────────────────────────── */
+#report-bug-btn,
+a[onclick*="report"],
+button[onclick*="report"] {
+  padding: 12px 28px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  background: #3b9797 !important;
+  color: white !important;
+  border: none !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+/* ─── Actions Column Final Fix ───────────────────────────────── */
+.bug-table {
+  table-layout: auto !important;
+  min-width: 900px !important;
+}
+
+.bug-table td:last-child,
+.bug-table th:last-child {
+  white-space: nowrap !important;
+  min-width: 160px !important;
+  width: 160px !important;
+  vertical-align: middle !important;
+}
+
+.action-btns {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+.btn-small {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  white-space: nowrap !important;
+  border-radius: 6px !important;
+}
+
+.table-wrapper {
+  overflow-x: auto !important;
+  width: 100% !important;
+}
