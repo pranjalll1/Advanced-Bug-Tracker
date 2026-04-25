@@ -7,12 +7,13 @@ if (!token) window.location.href = 'login.html';
 // ─── Base API URL ─────────────────────────────────────────────
 const API = 'https://advanced-bug-tracker.onrender.com';
 
-// ─── Hide "Report Bug" for non-testers ───────────────────────
-if (user && user.role !== 'tester') {
-  const bugsPageBtn  = document.getElementById('report-bug-btn');
-  const dashboardBtn = document.querySelector('.banner-actions');
-  if (bugsPageBtn)  bugsPageBtn.style.display  = 'none';
-  if (dashboardBtn) dashboardBtn.style.display = 'none';
+
+const reportBugBtn  = document.getElementById('report-bug-btn');
+const bannerActions = document.querySelector('.banner-actions');
+
+if (user?.role === 'developer') {
+  if (reportBugBtn)  reportBugBtn.style.display  = 'none';
+  if (bannerActions) bannerActions.style.display = 'none';
 }
 
 // ─── Helpers ──────────────────────────────────────────────────

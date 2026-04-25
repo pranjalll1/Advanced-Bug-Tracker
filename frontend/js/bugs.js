@@ -22,6 +22,12 @@ if (!token) window.location.href = 'login.html';
 
 // Show username in navbar
 document.getElementById('user-name').textContent = user?.name ?? '';
+const reportBugBtn = document.getElementById('report-bug-btn');
+if (reportBugBtn) {
+  if (user?.role === 'developer') {
+    reportBugBtn.style.display = 'none';  // hide for developer
+  }
+}
 
 
 // Role badge
