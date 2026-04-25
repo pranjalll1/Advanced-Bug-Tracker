@@ -105,12 +105,12 @@ const renderPendingUsers = (users) => {
           <button
             onclick="approveUser('${u._id}', '${u.name}')"
             class="btn-approve">
-            ✅ Approve
+             Approve
           </button>
           <button
             onclick="rejectUser('${u._id}', '${u.name}')"
             class="btn-reject">
-            ❌ Reject
+             Reject
           </button>
         </div>
       </div>
@@ -140,7 +140,7 @@ const approveUser = async (userId, userName) => {
           loadPendingUsers();
         }, 300);
       }
-      showToast(`✅ ${userName} approved!`);
+      showToast(` ${userName} approved!`);
     } else {
       alert(data.message);
     }
@@ -173,7 +173,7 @@ const rejectUser = async (userId, userName) => {
           loadPendingUsers();
         }, 300);
       }
-      showToast(`❌ ${userName} rejected.`);
+      showToast(` ${userName} rejected.`);
     } else {
       alert(data.message);
     }
@@ -344,7 +344,7 @@ const submitRoleChange = async () => {
     if (data.success) {
       closeRoleModal();
       loadAllUsers();
-      showToast(`✅ ${selectedUserName}'s role updated to ${role}!`);
+      showToast(` ${selectedUserName}'s role updated to ${role}!`);
     } else {
       const errEl = document.getElementById('role-error');
       if (errEl) {
@@ -375,7 +375,7 @@ const deleteUser = async (userId, userName) => {
 
     if (data.success) {
       loadAllUsers();
-      showToast(`🗑 ${userName} deleted.`);
+      showToast(` ${userName} deleted.`);
     } else {
       alert(data.message);
     }
