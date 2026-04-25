@@ -451,20 +451,40 @@ const showCreateError = (msg) => {
 };
 
 
+// const logout = () => {
+//   showConfirmModal({
+//     icon: '👋',
+//     title: 'Leaving so soon?',
+//     message: 'Are you sure you want to logout of BugTrackr?',
+//     confirmText: 'Yes, Logout',
+//     cancelText: 'Stay',
+//     confirmClass: 'btn-danger',
+//     onConfirm: () => {
+//       localStorage.removeItem('token');
+//       localStorage.removeItem('user');
+//       window.location.href = 'login.html';
+//     }
+//   });
+// };
 const logout = () => {
-  showConfirmModal({
-    icon: '👋',
-    title: 'Leaving so soon?',
-    message: 'Are you sure you want to logout of BugTrackr?',
-    confirmText: 'Yes, Logout',
-    cancelText: 'Stay',
-    confirmClass: 'btn-danger',
-    onConfirm: () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    }
-  });
+  // Check if showConfirm exists (from ConfirmModal.js)
+  if (typeof showConfirm === 'function') {
+    showConfirm({
+      title:       'Log Out',
+      message:     'Are you sure you want to log out?',
+      confirmText: 'Log Out',
+      type:        'danger',
+      onConfirm:   () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+      }
+    });
+  } else {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+  }
 };
 
 // ─── Init ─────────────────────────────────────────────────────

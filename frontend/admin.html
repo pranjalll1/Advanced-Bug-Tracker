@@ -142,37 +142,42 @@
 
     </div>
 
-    <!-- ─── Change Role Modal ────────────────────────────────── -->
-    <div id="role-modal" class="modal hidden">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Change User Role</h2>
-          <span onclick="closeRoleModal()" class="close-btn">✕</span>
-        </div>
-        <div class="modal-body">
-          <p id="role-modal-user-name" style="margin-bottom:12px; font-weight:600;">
-          </p>
-          <div class="form-group">
-            <label>New Role</label>
-            <select id="new-role">
-              <option value="tester">Tester</option>
-              <option value="developer">Developer</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <div id="role-error" class="error-msg hidden"></div>
-        </div>
-        <div class="modal-footer">
-          <button onclick="closeRoleModal()" class="btn-secondary">Cancel</button>
-          <button onclick="submitRoleChange()" class="btn-primary">Update Role</button>
-        </div>
-      </div>
+   <!-- ─── Change Role Modal ────────────────────────────────── -->
+<div id="role-modal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🔄 Change User Role</h2>
+      <span onclick="closeRoleModal()" class="close-btn">✕</span>
     </div>
+    <div class="modal-body">
+      <p id="role-modal-user-name"
+        style="margin-bottom:16px; font-weight:600; color:#2c3e50;">
+      </p>
+      <div class="form-group">
+        <label>Select New Role</label>
+        <select id="new-role-select">
+          <option value="tester">Tester</option>
+          <option value="developer">Developer</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div id="role-error" class="error-msg hidden"></div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeRoleModal()"
+        class="btn-secondary">Cancel</button>
+      <button onclick="submitRoleChange()"
+        class="btn-primary">Update Role</button>
+    </div>
+  </div>
+</div>
 
-    <div id="modal-overlay" class="overlay hidden" onclick="closeRoleModal()"></div>
-
-    <script src="js/admin.js"></script>
+<div id="modal-overlay"
+  class="overlay hidden"
+  onclick="closeRoleModal()">
+</div>
+   
     <script>
       // Dark Mode Logic
       const themeToggleBtn = document.getElementById('theme-toggle');
@@ -200,6 +205,7 @@
   </main>
 
   <script src="js/ConfirmModal.js"></script>
+    <script src="js/admin.js"></script>
 </body>
 
 </html>

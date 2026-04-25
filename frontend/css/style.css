@@ -2254,3 +2254,46 @@ button[onclick*="report"] {
   overflow-x: auto !important;
   width: 100% !important;
 }
+/* ─── Fix Action Buttons Alignment ──────────────────────── */
+.bug-table {
+  min-width:       900px;
+  table-layout:    fixed;
+}
+
+.table-wrapper {
+  overflow-x:      auto;
+  width:           100%;
+  border-radius:   8px;
+}
+
+/* Fix last column (Actions) */
+.bug-table th:last-child,
+.bug-table td:last-child {
+  min-width:       140px;
+  width:           140px;
+}
+
+/* Fix action buttons inside table */
+.action-btns {
+  display:         flex;
+  flex-direction:  row;
+  gap:             6px;
+  align-items:     center;
+  flex-wrap:       nowrap;
+}
+
+.btn-small {
+  padding:         5px 10px;
+  font-size:       12px;
+  border:          none;
+  border-radius:   5px;
+  cursor:          pointer;
+  white-space:     nowrap;
+  flex-shrink:     0;
+}
+
+.btn-view   { background: #3498db; color: white; }
+.btn-delete { background: #e74c3c; color: white; }
+
+.btn-view:hover   { background: #2980b9; }
+.btn-delete:hover { background: #c0392b; }
