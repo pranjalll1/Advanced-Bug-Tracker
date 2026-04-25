@@ -664,7 +664,7 @@ body {
 }
 
 .unassigned {
-  color: #999;
+  color: #d2cbcb;
   font-style: italic;
 }
 
@@ -684,10 +684,10 @@ body {
 .severity-trivial { background: #f0f0f0; color: #7f8c8d; }
 
 /* Priority */
-.priority-urgent { background: #fde8e8; color: #c0392b; }
-.priority-high { background: rgba(253,181,206,0.25); color: #a0365a; }
-.priority-medium { background: rgba(59,151,151,0.15); color: #2d8080; }
-.priority-low { background: #f0f0f0; color: #7f8c8d; }
+.priority-high { background: #fdb5ce; color: #7a0030; font-weight: 700; }
+.priority-urgent { background: #ff6b6b; color: #fff; font-weight: 700; }
+.priority-medium { background: rgba(59,151,151,0.25); color: #1a6060; font-weight: 700; }
+.priority-low { background: #e0e0e0; color: #555; font-weight: 700; }
 
 /* Status */
 .status-open { background: rgba(22,71,106,0.12); color: #16476a; }

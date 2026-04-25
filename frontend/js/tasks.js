@@ -450,10 +450,21 @@ const showCreateError = (msg) => {
   el.classList.remove('hidden');
 };
 
+
 const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = 'login.html';
+  showConfirmModal({
+    icon: '👋',
+    title: 'Leaving so soon?',
+    message: 'Are you sure you want to logout of BugTrackr?',
+    confirmText: 'Yes, Logout',
+    cancelText: 'Stay',
+    confirmClass: 'btn-danger',
+    onConfirm: () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  });
 };
 
 // ─── Init ─────────────────────────────────────────────────────
