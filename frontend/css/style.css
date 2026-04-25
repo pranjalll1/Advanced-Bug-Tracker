@@ -2182,3 +2182,22 @@ body.dark-mode .custom-modal-actions .btn-secondary {
 }
 
 body.dark-mode .custom-modal-actions .btn-secondary:hover { background: #16476a; }
+/* ─── Create Task Button Fix ─────────────────────────────────── */
+#create-task-btn {
+  padding: 12px 28px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  background: #3b9797 !important;
+  color: white !important;
+  border: none !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+#create-task-btn:hover {
+  background: #2d8080 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(59, 151, 151, 0.35) !important;
+}

@@ -1,7 +1,7 @@
 const setupAvatars = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const sidebarAvatar = document.getElementById('user-avatar');
-  
+
   if (!user) return;
 
   if (user.avatar) {
@@ -17,5 +17,5 @@ const setupAvatars = () => {
   }
 };
 
-// Run automatically when loaded
+window.setupAvatars = setupAvatars;
 setupAvatars();
