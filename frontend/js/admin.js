@@ -119,68 +119,80 @@ const renderPendingUsers = (users) => {
 
 // ─── Approve User ─────────────────────────────────────────────
 const approveUser = async (userId, userName) => {
-  if (!confirm(`Approve ${userName}'s account?`)) return;
+  showConfirm({
+    title:       'Approve User',
+    message:     `Are you sure you want to approve ${userName}'s account?`,
+    confirmText: 'Approve',
+    type:        'success',
+    onConfirm:   async () => {
+      try {
+        const response = await fetch(
+          `${API}/api/admin/users/${userId}/approve`, {
+          method:  'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `${API}/api/admin/users/${userId}/approve`, {
-      method:  'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          const card = document.getElementById(`user-card-${userId}`);
+          if (card) {
+            card.style.opacity    = '0';
+            card.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+              card.remove();
+              loadPendingUsers();
+            }, 300);
+          }
+          showToast(` ${userName} approved!`);
+        } else {
+          showToast(` ${data.message}`);
+        }
 
-    if (data.success) {
-      const card = document.getElementById(`user-card-${userId}`);
-      if (card) {
-        card.style.opacity    = '0';
-        card.style.transition = 'opacity 0.3s';
-        setTimeout(() => {
-          card.remove();
-          loadPendingUsers();
-        }, 300);
+      } catch (error) {
+        console.error('Approve error:', error);
       }
-      showToast(` ${userName} approved!`);
-    } else {
-      alert(data.message);
     }
-
-  } catch (error) {
-    console.error('Approve error:', error);
-  }
+  });
 };
 
 // ─── Reject User ──────────────────────────────────────────────
 const rejectUser = async (userId, userName) => {
-  if (!confirm(`Reject ${userName}'s account?`)) return;
+  showConfirm({
+    title:       'Reject User',
+    message:     `Reject ${userName}'s account? They will not be able to login.`,
+    confirmText: 'Reject',
+    type:        'danger',
+    onConfirm:   async () => {
+      try {
+        const response = await fetch(
+          `${API}/api/admin/users/${userId}/reject`, {
+          method:  'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `${API}/api/admin/users/${userId}/reject`, {
-      method:  'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          const card = document.getElementById(`user-card-${userId}`);
+          if (card) {
+            card.style.opacity    = '0';
+            card.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+              card.remove();
+              loadPendingUsers();
+            }, 300);
+          }
+          showToast(`${userName} rejected.`);
+        } else {
+          showToast(` ${data.message}`);
+        }
 
-    if (data.success) {
-      const card = document.getElementById(`user-card-${userId}`);
-      if (card) {
-        card.style.opacity    = '0';
-        card.style.transition = 'opacity 0.3s';
-        setTimeout(() => {
-          card.remove();
-          loadPendingUsers();
-        }, 300);
+      } catch (error) {
+        console.error('Reject error:', error);
       }
-      showToast(` ${userName} rejected.`);
-    } else {
-      alert(data.message);
     }
-
-  } catch (error) {
-    console.error('Reject error:', error);
-  }
+  });
 };
 
 // ─── Load All Users ───────────────────────────────────────────
@@ -362,27 +374,33 @@ const submitRoleChange = async () => {
 
 // ─── Delete User ──────────────────────────────────────────────
 const deleteUser = async (userId, userName) => {
-  if (!confirm(`Permanently delete ${userName}? This cannot be undone.`)) return;
+  showConfirm({
+    title:       'Delete User',
+    message:     `Permanently delete ${userName}? This cannot be undone.`,
+    confirmText: 'Delete',
+    type:        'danger',
+    onConfirm:   async () => {
+      try {
+        const response = await fetch(
+          `${API}/api/admin/users/${userId}`, {
+          method:  'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
 
-  try {
-    const response = await fetch(
-      `${API}/api/admin/users/${userId}`, {
-      method:  'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+        const data = await response.json();
 
-    const data = await response.json();
+        if (data.success) {
+          loadAllUsers();
+          showToast(` ${userName} deleted.`);
+        } else {
+          showToast(` ${data.message}`);
+        }
 
-    if (data.success) {
-      loadAllUsers();
-      showToast(` ${userName} deleted.`);
-    } else {
-      alert(data.message);
+      } catch (error) {
+        console.error('Delete user error:', error);
+      }
     }
-
-  } catch (error) {
-    console.error('Delete user error:', error);
-  }
+  });
 };
 
 // ─── Toast Notification ───────────────────────────────────────
@@ -432,12 +450,17 @@ const formatDate = (dateStr) => {
 };
 
 const logout = () => {
-  if (confirm('Are you sure you want to log out?')) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
-  }
+  showConfirm({
+    title:       'Log Out',
+    message:     'Are you sure you want to log out?',
+    confirmText: 'Log Out',
+    type:        'danger',
+    onConfirm:   () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+  });
 };
-
 // ─── Init ─────────────────────────────────────────────────────
 loadPendingUsers();
