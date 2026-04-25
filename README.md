@@ -36,20 +36,20 @@ Render for deployment
 Screenshots
 
 Landing Page
-! [LandingPage](./Users/pranjalsoni/Documents/bugtrackr/screenshots/LandingPage.png ) 
+! [LandingPage](./screenshots/LandingPage.png)
 
 Login Page
-![LoginPage](./Users/pranjalsoni/Documents/bugtrackr/screenshots/LoginPage.png)
+![LoginPage](./screenshots/LoginPage.png)
 
 
 Dashboard  
 ![Dashboard](./screenshots/Dashboard.png)
 
 Task Management  
-![Tasks](./screenshots/TasksList.png)
+![Tasks](./screenshots/TaskList.png)
 
 Bug lists 
-![Bugs](./screenshots/BugsList.png)
+![Bugs](./screenshots/BugList.png)
 
 
 Live Demo
