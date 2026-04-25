@@ -85,7 +85,7 @@ const loadBugs = async (page = 1) => {
     console.log('📦 API Response:', data);
 
     if (!data.success) {
-      showTableMessage(`❌ Error: ${data.message}`);
+      showTableMessage(`Error: ${data.message}`);
       return;
     }
 
@@ -96,7 +96,7 @@ const loadBugs = async (page = 1) => {
     renderBugs(data.bugs);
 
   } catch (error) {
-    console.error('❌ Load bugs error:', error);
+    console.error('Load bugs error:', error);
     showTableMessage('Server error. Make sure your backend is running.');
   }
 };
@@ -120,7 +120,7 @@ const renderBugs = (bugs) => {
       <td>
         <strong>${bug.title}</strong>
         ${bug.project
-      ? `<br><small>📁 ${bug.project}</small>`
+      ? `<br><small> ${bug.project}</small>`
       : ''}
       </td>
       <td>
