@@ -36,19 +36,24 @@ Render for deployment
 Screenshots
 
 Landing Page
-! [LandingPage](./screenshots/LandingPage.png)
+
+![LandingPage](./screenshots/LandingPage.png)
 
 Login Page
+
 ![LoginPage](./screenshots/LoginPage.png)
 
 
-Dashboard  
+Dashboard 
+
 ![Dashboard](./screenshots/Dashboard.png)
 
-Task Management  
+Task Management 
+
 ![Tasks](./screenshots/TaskList.png)
 
 Bug lists 
+
 ![Bugs](./screenshots/BugList.png)
 
 
