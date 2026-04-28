@@ -7,6 +7,91 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
+<script>
+  // ─── Contact Modal ─────────────────────────────────────────
+  const showContactModal = ({ icon, title, message, btnClass }) => {
+    // Remove existing if any
+    const existing = document.getElementById('contact-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'contact-modal-overlay';
+    overlay.className = 'contact-modal-overlay';
+    overlay.innerHTML = `
+      <div class="contact-modal-card" id="contact-modal-card">
+        <div class="contact-modal-icon">${icon}</div>
+        <h2>${title}</h2>
+        <p>${message}</p>
+        <button class="btn-modal-ok ${btnClass}" onclick="closeContactModal()">OK</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+      overlay.classList.add('visible');
+      document.getElementById('contact-modal-card').classList.add('visible');
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeContactModal();
+    });
+  };
+
+  const closeContactModal = () => {
+    const overlay = document.getElementById('contact-modal-overlay');
+    const card    = document.getElementById('contact-modal-card');
+    if (!overlay) return;
+    card.classList.remove('visible');
+    overlay.classList.remove('visible');
+    setTimeout(() => overlay.remove(), 300);
+  };
+
+  // ─── Send Message ───────────────────────────────────────────
+  const sendContactMessage = () => {
+    const name    = document.getElementById('contact-name').value.trim();
+    const email   = document.getElementById('contact-email').value.trim();
+    const subject = document.getElementById('contact-subject').value.trim();
+    const message = document.getElementById('contact-message').value.trim();
+
+    // Validation modal
+    if (!name || !email || !message) {
+      showContactModal({
+        icon:     '⚠️',
+        title:    'Missing Fields',
+        message:  'Please fill in your name, email, and message before sending.',
+        btnClass: 'btn-error',
+      });
+      return;
+    }
+
+    // Email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showContactModal({
+        icon:     '📧',
+        title:    'Invalid Email',
+        message:  'Please enter a valid email address.',
+        btnClass: 'btn-error',
+      });
+      return;
+    }
+
+    // Success modal
+    showContactModal({
+      icon:     '🎉',
+      title:    'Message Sent!',
+      message:  `Thanks ${name}! I'll get back to you at ${email} soon.`,
+      btnClass: 'btn-success',
+    });
+
+    // Clear form
+    document.getElementById('contact-name').value    = '';
+    document.getElementById('contact-email').value   = '';
+    document.getElementById('contact-subject').value = '';
+    document.getElementById('contact-message').value = '';
+  };
+</script>
 <body class="landing-page">
 
   <!-- ─── Premium Navbar ────────────────────────────── -->
@@ -148,18 +233,69 @@
     </div>
   </section>
 
-  <!-- ─── Footer ────────────────────────────── -->
-  <footer class="premium-footer">
+  
+<section id="contact" class="contact-section">
+  <div class="section-container">
+
+    <div class="contact-top">
+      <span class="contact-badge">Contact</span>
+      <h2 class="contact-title">Let's Work Together</h2>
+      <p class="contact-subtitle">Whether it's a question, feedback, or collaboration — I'm always open to a conversation.</p>
+    </div>
+
+    <div class="contact-cards">
+      <div class="contact-card">
+        <div class="contact-card-icon">✉️</div>
+        <div class="contact-card-label">Email</div>
+        <div class="contact-card-value">
+          <a href="mailto:pranjal@gmail.com">pranjal@gmail.com</a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">💻</div>
+        <div class="contact-card-label">GitHub</div>
+        <div class="contact-card-value">
+          <a href="https://github.com/pranjalll1" target="_blank">github.com/pranjalll1</a>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-icon">🔗</div>
+        <div class="contact-card-label">LinkedIn</div>
+        <div class="contact-card-value">
+          <a href="https://linkedin.com/in/pranjalsoni" target="_blank">linkedin.com/in/pranjalsoni</a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="contact-divider">
+
+    <div class="contact-form-wrap">
+      <div class="contact-form-row">
+        <input class="contact-inp" type="text" id="contact-name" placeholder="Your name">
+        <input class="contact-inp" type="email" id="contact-email" placeholder="Your email">
+      </div>
+      <input class="contact-inp contact-inp-full" type="text" id="contact-subject" placeholder="Subject">
+      <textarea class="contact-txt" id="contact-message" rows="4" placeholder="Your message..."></textarea>
+      <button class="contact-btn" onclick="sendContactMessage()">Send Message →</button>
+      <div id="contact-success" class="contact-success-msg">
+        <i class="fa-solid fa-circle-check"></i> Message sent! I'll get back to you soon.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+   <footer class="premium-footer">
     <div class="section-container footer-flex">
       <div class="footer-logo">
         <i class="fa-solid fa-bug text-gradient"></i> BugTrackr
       </div>
       <div class="footer-text">
-        &copy; 2026 BugTrackr Inc. All rights reserved.
+        &copy; 2026 BugTrackr Inc. All rights reserved Built By Pranjal 
       </div>
     </div>
   </footer>
 
   <script src="js/ConfirmModal.js"></script>
 </body>
-</html>
+</html> 
